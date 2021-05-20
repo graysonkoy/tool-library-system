@@ -3,22 +3,19 @@ using System.Collections.Generic;
 
 namespace cab301_assignment {
 	class ToolLibrarySystem {
-		private Dictionary<string, List<ToolCollection>> toolCollections;
-		private MemberCollection memberCollection;
-
 		// constructors
 		public ToolLibrarySystem(Dictionary<string, List<string>> toolCategoriesAndTypes) {
 			// create tool collections
-			this.toolCollections = new Dictionary<string, List<ToolCollection>>(); // TODO: check if this is allowed
+			Database.toolCollections = new Dictionary<string, List<ToolCollection>>(); // TODO: check if this is allowed
 
 			// loop through categories and create dictionary entries
 			foreach (var entry in toolCategoriesAndTypes) {
-				this.toolCollections.Add(entry.Key, new List<ToolCollection>());
+				Database.toolCollections.Add(entry.Key, new List<ToolCollection>());
 
 				// loop through types in category and add to list
 				foreach (var type in entry.Value) {
 					ToolCollection newToolCollection = new ToolCollection(type);
-					this.toolCollections[entry.Key].Add(newToolCollection);
+					Database.toolCollections[entry.Key].Add(newToolCollection);
 				}
 			}
 
@@ -32,12 +29,12 @@ namespace cab301_assignment {
 			*/
 
 			// create member collection
-			this.memberCollection = new MemberCollection();
+			Database.memberCollection = new MemberCollection();
 		}
 
 		// private functions
 		private bool getCurrentToolCollection(out ToolCollection outCollection) {
-			foreach (var entry in toolCollections) {
+			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
 
 				if (entry.Key == Program.selectedCategory) {
@@ -51,36 +48,10 @@ namespace cab301_assignment {
 			}
 
 			// didn't find collection
-			Console.WriteLine($"no current tool collection found");
+			Console.WriteLine($"No current tool collection found");
 			outCollection = default(ToolCollection);
 			return false;
 		}
-
-		/*
-		private bool getToolCollectionForTool(Tool aTool, out ToolCollection outCollection) {
-			foreach (var entry in toolCollections) {
-				var collections = entry.Value;
-
-				foreach (var collection in collections) {
-					Tool[] tools = collection.toArray();
-
-					foreach (Tool tool in tools) {
-						// check if this is the tool
-						if (tool.CompareTo(aTool) == 0) {
-							// found the collection
-							outCollection = collection;
-							return true;
-						}
-					}
-				}
-			}
-
-			// didn't find collection (tool doesn't exist in the system)
-			Console.WriteLine($"tool collection not found for tool {aTool.ToString()}");
-			outCollection = default(ToolCollection);
-			return false;
-		}
-		*/
 
 		private void changeQuantityOfTool(ToolCollection collection, Tool aTool, int quantity) {
 			Tool[] tools = collection.toArray();
@@ -89,11 +60,18 @@ namespace cab301_assignment {
 				if (tools[i].CompareTo(aTool) == 0) {
 					// add the extra quantity
 					tools[i].Quantity += quantity;
+					tools[i].AvailableQuantity += quantity;
 
 					// check if there's under 0 tools and clamp
 					if (tools[i].Quantity < 0) {
 						tools[i].Quantity = 0;
 						Console.WriteLine($"{tools[i].ToString()} quantity clamped to 0 (removed too many");
+					}
+
+					// TODO: check this
+					if (tools[i].AvailableQuantity < 0) {
+						tools[i].AvailableQuantity = 0;
+						Console.WriteLine($"{tools[i].ToString()} available quantity clamped to 0 (removed too many");
 					}
 
 					return;
@@ -138,11 +116,11 @@ namespace cab301_assignment {
 		}
 
 		public void add(Member aMember) { // add a new memeber to the system
-			memberCollection.add(aMember);
+			Database.memberCollection.add(aMember);
 		}
 
 		public void delete(Member aMember) { // delete a member from the system
-			memberCollection.delete(aMember);
+			Database.memberCollection.delete(aMember);
 		}
 
 		public void displayBorrowingTools(Member aMember) { // given a member, display all the tools that the member are currently renting
@@ -154,7 +132,7 @@ namespace cab301_assignment {
 
 		public void displayTools(string aToolType) { // display all the tools of a tool type selected by a member
 			ToolCollection selectedCollection = null;
-			foreach (var entry in toolCollections) {
+			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
 
 				foreach (var collection in collections) {
@@ -172,9 +150,12 @@ namespace cab301_assignment {
 			}
 
 			Console.WriteLine($"Tools in tool type '{aToolType}'");
-			foreach (Tool tool in selectedCollection.toArray()) {
-				Console.Write(tool.ToString());
+			Tool[] tools = selectedCollection.toArray();
+			for (int i = 0; i < selectedCollection.Number; i++) {
+				Console.WriteLine($"{i + 1}. ${tools[i].ToString()}");
 			}
+
+			Console.WriteLine();
 		}
 
 		public void borrowTool(Member aMember, Tool aTool) { // a member borrows a tool from the tool library
@@ -189,11 +170,11 @@ namespace cab301_assignment {
 			return aMember.Tools;
 		}
 
-		public void displayTopTHree() { // display top three most frequently borrowed tools by the members in the descending order by the number of times each tool has been borrowed.
+		public void displayTopThree() { // display top three most frequently borrowed tools by the members in the descending order by the number of times each tool has been borrowed.
 			const int topAmount = 3;
 			Tool[] topBorrowed = new Tool[topAmount];
 
-			foreach (var entry in toolCollections) {
+			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
 
 				foreach (var collection in collections) {

@@ -29,6 +29,8 @@ namespace cab301_assignment {
 			// insert the new member
 			number++;
 			members.Insert(aMember);
+
+			Console.WriteLine($"Added member {aMember.ToString()} successfully");
 		}
 
 		public void delete(Member aMember) { // delete a given member from this member collection, a member can be deleted only when the member currently is not holding any tool
@@ -44,6 +46,8 @@ namespace cab301_assignment {
 			}
 
 			number--;
+
+			Console.WriteLine($"Deleted member {aMember.ToString()} successfully");
 		}
 
 		public Boolean search(Member aMember) { // search a given member in this member collection. Return true if this memeber is in the member collection; return false otherwise.
