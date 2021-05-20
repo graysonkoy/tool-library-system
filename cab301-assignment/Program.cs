@@ -7,7 +7,9 @@ namespace cab301_assignment {
 
 		public static string selectedCategory = "";
 		public static string selectedType = "";
+
 		public static Member loggedInUser = null;
+		public static bool staffLoggedIn = false;
 
 		static void staffAddToolMenu() {
 			Console.Clear();
@@ -118,14 +120,98 @@ namespace cab301_assignment {
 		}
 
 		static void staffRemoveMemberMenu() {
+			Console.Clear();
+			Console.WriteLine("Member deletion menu");
+			Console.WriteLine();
 
+			List<Member> members = new List<Member>(Database.memberCollection.toArray());
+
+			Member selectedMember;
+			if (!UI.listSelector("Select member to delete: ", "Member (0 to exit): ", members, out selectedMember))
+				return;
+
+			Console.WriteLine();
+
+			system.delete(selectedMember);
 		}
 
+		/*
 		static void staffMemberBorrowingToolsMenu() {
+			Console.Clear();
+			Console.WriteLine("Member borrowing tools menu");
+			Console.WriteLine();
 
+			List<Member> members = new List<Member>(Database.memberCollection.toArray());
+
+			Member selectedMember;
+			if (!UI.listSelector("Select member to view borrowed tools for: ", "Member (0 to exit): ", members, out selectedMember))
+				return;
+
+			Console.WriteLine();
+
+			system.displayBorrowingTools(selectedMember);
+		}
+		*/
+
+		static void staffMemberContactNumber() {
+			Console.Clear();
+			Console.WriteLine("Member contact number finder");
+			Console.WriteLine();
+
+			// TODO: check if they want list selector or just type in name and find number
+			string firstName = UI.getTextInput("Enter the first name of the member: ");
+			string lastName = UI.getTextInput("Enter the last name of the member: ");
+
+			Console.WriteLine();
+
+			// find member
+			Member selectedMember = null;
+			foreach (Member member in Database.memberCollection.toArray()) {
+				if (member.FirstName == firstName && member.LastName == lastName) {
+					selectedMember = member;
+					break;
+				}
+			}
+
+			if (selectedMember == null) {
+				Console.WriteLine("Member not found");
+				return;
+			}
+
+			Console.WriteLine($"{firstName} {lastName} has the contact number {selectedMember.ContactNumber}");
+		}
+
+		static void staffMenuLogin() {
+			Console.Clear();
+			Console.WriteLine("Staff login");
+			Console.WriteLine();
+
+			string login = UI.getTextInput("Enter username: ");
+			string password = UI.getTextInput("Enter password: ");
+
+			if (login == "staff" && password == "today123") {
+				staffLoggedIn = true;
+			} else {
+				Console.WriteLine();
+				Console.WriteLine("Login incorrect");
+				return;
+			}
+
+			staffMenu();
 		}
 
 		static void staffMenu() {
+			// check login
+			if (!staffLoggedIn) {
+				staffMenuLogin();
+
+				Console.WriteLine();
+				UI.waitToContinue();
+
+				mainMenu();
+				return;
+			}
+
 			// draw staff menu
 			UI.drawMenu("Staff Menu", new List<UI.IMenuItem> {
 				new UI.MenuOption("Add a new tool", staffAddToolMenu),
@@ -133,7 +219,8 @@ namespace cab301_assignment {
 				new UI.MenuOption("Remove stock of an existing tool", staffRemoveToolStockMenu),
 				new UI.MenuOption("Register a new member", staffRegisterMenu),
 				new UI.MenuOption("Remove a member", staffRemoveMemberMenu),
-				new UI.MenuOption("Show tools a member is borrowing", staffMemberBorrowingToolsMenu),
+				// new UI.MenuOption("Show tools a member is borrowing", staffMemberBorrowingToolsMenu), // TODO: this isn't even needed? check task sheet
+				new UI.MenuOption("Find contact number for member", staffMemberContactNumber),
 				new UI.MenuOption("Return to main menu", mainMenu, true)
 			});
 
@@ -178,12 +265,7 @@ namespace cab301_assignment {
 
 			if (loggedInUser.Tools.Length >= 3) {
 				Console.WriteLine("Cannot borrow any more tools");
-
-				Console.WriteLine();
-
-				UI.waitToContinue();
-
-				memberMenu();
+				return;
 			}
 
 			// get categories
@@ -280,11 +362,6 @@ namespace cab301_assignment {
 			if (loggedInUser == null) {
 				Console.WriteLine();
 				Console.WriteLine("Member not found");
-				Console.WriteLine();
-
-				UI.waitToContinue();
-
-				mainMenu();
 				return;
 			}
 
@@ -294,11 +371,6 @@ namespace cab301_assignment {
 			while (pin != loggedInUser.PIN) {
 				Console.WriteLine();
 				Console.WriteLine("PIN incorrect");
-				Console.WriteLine();
-
-				UI.waitToContinue();
-				mainMenu();
-
 				return;
 			}
 
@@ -309,6 +381,11 @@ namespace cab301_assignment {
 			// check login
 			if (loggedInUser == null) {
 				memberMenuLogin();
+
+				Console.WriteLine();
+				UI.waitToContinue();
+
+				mainMenu();
 				return;
 			}
 
@@ -334,6 +411,7 @@ namespace cab301_assignment {
 
 		static void mainMenu() {
 			// log out user
+			staffLoggedIn = false;
 			loggedInUser = null;
 
 			// draw main menu

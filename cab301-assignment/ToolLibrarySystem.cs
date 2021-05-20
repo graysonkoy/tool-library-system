@@ -65,7 +65,7 @@ namespace cab301_assignment {
 		// public functions
 		public void add(Tool aTool) { // add a new tool to the system
 			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
 				return;
 
 			currentCollection.add(aTool);
@@ -73,7 +73,7 @@ namespace cab301_assignment {
 
 		public void add(Tool aTool, int quantity) { // add new pieces of an existing tool to the system
 			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
 				return;
 
 			changeQuantityOfTool(currentCollection, aTool, quantity);
@@ -81,7 +81,7 @@ namespace cab301_assignment {
 
 		public void delete(Tool aTool) { // delete a given tool from the system
 			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
 				return;
 
 			currentCollection.delete(aTool);
@@ -89,7 +89,7 @@ namespace cab301_assignment {
 
 		public void delete(Tool aTool, int quantity) { // remove some pieces of a tool from the system
 			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
 				return;
 
 			changeQuantityOfTool(currentCollection, aTool, -quantity);
