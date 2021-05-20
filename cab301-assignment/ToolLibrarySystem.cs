@@ -98,6 +98,7 @@ namespace cab301_assignment {
 		public void add(Member aMember) { // add a new memeber to the system
 			Database.memberCollection.add(aMember);
 
+			// TODO: do you print here or in program
 			Console.WriteLine($"Added member {aMember.ToString()} successfully");
 		}
 

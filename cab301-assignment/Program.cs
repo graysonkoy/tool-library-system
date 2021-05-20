@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace cab301_assignment {
 	static class Program {
@@ -425,42 +426,47 @@ namespace cab301_assignment {
 		}
 
 		static void Main(string[] args) {
-			// initialise tools and system
-			var toolCategoriesAndTypes = new Dictionary<string, List<string>>();
-			toolCategoriesAndTypes.Add("Gardening Tools", new List<string> { "Line Trimmers", "Lawn Mowers", "Hand Tools", "Wheelbarrows", "Garden Power Tools" });
-			toolCategoriesAndTypes.Add("Flooring Tools", new List<string> { "Scrapers", "Floor Lasers", "Floor Levelling Tools", "Floor Levelling Materials", "Floor Hand Tools", "Tiling Tools" });
-			toolCategoriesAndTypes.Add("Fencing Tools", new List<string> { "Hand Tools", "Electric Fencing", "Steel Fencing Tools", "Power Tools", "Fencing Accessories" });
-			toolCategoriesAndTypes.Add("Measuring Tools", new List<string> { "Distance Tools", "Laser Measurer", "Measuring Jugs", "Temperature & Humidity Tools", "Levelling Tools", "Markers" });
-			toolCategoriesAndTypes.Add("Cleaning Tools", new List<string> { "Draining", "Car Cleaning", "Vacuum", "Pressure Cleaners", "Pool Cleaning", "Floor Cleaning" });
-			toolCategoriesAndTypes.Add("Painting Tools", new List<string> { "Sanding Tools", "Brushes", "Rollers", "Paint Removal Tools", "Paint Scrapers", "Sprayers" });
-			toolCategoriesAndTypes.Add("Electronic Tools", new List<string> { "Voltage Tester", "Oscilloscopes", "Thermal Imaging", "Data Test Tool", "Insulation Testers" });
-			toolCategoriesAndTypes.Add("Electricity Tools", new List<string> { "Test Equipment", "Safety Equipment", "Basic Hand tools", "Circuit Protection", "Cable Tools" });
-			toolCategoriesAndTypes.Add("Automotive Tools", new List<string> { "Jacks", "Air Compressors", "Battery Chargers", "Socket Tools", "Braking", "Drivetrain" });
+			var saved = Console.Out;
+			Console.SetOut(TextWriter.Null);
+			{
+				// initialise tools and system
+				var toolCategoriesAndTypes = new Dictionary<string, List<string>>();
+				toolCategoriesAndTypes.Add("Gardening Tools", new List<string> { "Line Trimmers", "Lawn Mowers", "Hand Tools", "Wheelbarrows", "Garden Power Tools" });
+				toolCategoriesAndTypes.Add("Flooring Tools", new List<string> { "Scrapers", "Floor Lasers", "Floor Levelling Tools", "Floor Levelling Materials", "Floor Hand Tools", "Tiling Tools" });
+				toolCategoriesAndTypes.Add("Fencing Tools", new List<string> { "Hand Tools", "Electric Fencing", "Steel Fencing Tools", "Power Tools", "Fencing Accessories" });
+				toolCategoriesAndTypes.Add("Measuring Tools", new List<string> { "Distance Tools", "Laser Measurer", "Measuring Jugs", "Temperature & Humidity Tools", "Levelling Tools", "Markers" });
+				toolCategoriesAndTypes.Add("Cleaning Tools", new List<string> { "Draining", "Car Cleaning", "Vacuum", "Pressure Cleaners", "Pool Cleaning", "Floor Cleaning" });
+				toolCategoriesAndTypes.Add("Painting Tools", new List<string> { "Sanding Tools", "Brushes", "Rollers", "Paint Removal Tools", "Paint Scrapers", "Sprayers" });
+				toolCategoriesAndTypes.Add("Electronic Tools", new List<string> { "Voltage Tester", "Oscilloscopes", "Thermal Imaging", "Data Test Tool", "Insulation Testers" });
+				toolCategoriesAndTypes.Add("Electricity Tools", new List<string> { "Test Equipment", "Safety Equipment", "Basic Hand tools", "Circuit Protection", "Cable Tools" });
+				toolCategoriesAndTypes.Add("Automotive Tools", new List<string> { "Jacks", "Air Compressors", "Battery Chargers", "Socket Tools", "Braking", "Drivetrain" });
 
-			system = new ToolLibrarySystem(toolCategoriesAndTypes);
+				system = new ToolLibrarySystem(toolCategoriesAndTypes);
 
-			// add some default tools
-			selectedCategory = "Gardening Tools";
-			selectedType = "Line Trimmers";
+				// add some default tools
+				selectedCategory = "Gardening Tools";
+				selectedType = "Line Trimmers";
 
-			var trimmer1 = new Tool("Bad Line Trimmer", 100);
-			trimmer1.NoBorrowings = 4;
-			system.add(trimmer1);
+				var trimmer1 = new Tool("Bad Line Trimmer", 100);
+				trimmer1.NoBorrowings = 4;
+				system.add(trimmer1);
 
-			var trimmer2 = new Tool("Ultra Line Trimmer", 21);
-			trimmer2.NoBorrowings = 3;
-			system.add(trimmer2);
+				var trimmer2 = new Tool("Ultra Line Trimmer", 21);
+				trimmer2.NoBorrowings = 3;
+				system.add(trimmer2);
 
-			var trimmer3 = new Tool("Luxury Line Trimmer", 47);
-			trimmer3.NoBorrowings = 7;
-			system.add(trimmer3);
+				var trimmer3 = new Tool("Luxury Line Trimmer", 47);
+				trimmer3.NoBorrowings = 7;
+				system.add(trimmer3);
 
-			var trimmer4 = new Tool("Another Line Trimmer", 55);
-			trimmer4.NoBorrowings = 1;
-			system.add(trimmer4);
+				var trimmer4 = new Tool("Another Line Trimmer", 55);
+				trimmer4.NoBorrowings = 1;
+				system.add(trimmer4);
 
-			// add a default user
-			system.add(new Member("Bob", "Jeff", "12345678", "1234"));
+				// add a default user
+				system.add(new Member("Bob", "Jeff", "12345678", "1234"));
+			}
+			Console.SetOut(saved);
 
 			mainMenu();
 		}
