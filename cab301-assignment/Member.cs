@@ -57,10 +57,17 @@ namespace cab301_assignment {
 
 		// public functions
 		public void addTool(Tool aTool) {
+			if (tools.Number >= 3) {
+				Console.WriteLine("Cannot borrow any more tools");
+				return;
+			}
+
+			aTool.addBorrower(this);
 			tools.add(aTool);
 		}
 
 		public void deleteTool(Tool aTool) {
+			aTool.deleteBorrower(this);
 			tools.delete(aTool);
 		}
 

@@ -33,26 +33,6 @@ namespace cab301_assignment {
 		}
 
 		// private functions
-		private bool getCurrentToolCollection(out ToolCollection outCollection) {
-			foreach (var entry in Database.toolCollections) {
-				var collections = entry.Value;
-
-				if (entry.Key == Program.selectedCategory) {
-					foreach (var collection in collections) {
-						if (collection.Name == Program.selectedType) {
-							outCollection = collection;
-							return true;
-						}
-					}
-				}
-			}
-
-			// didn't find collection
-			Console.WriteLine($"No current tool collection found");
-			outCollection = default(ToolCollection);
-			return false;
-		}
-
 		private void changeQuantityOfTool(ToolCollection collection, Tool aTool, int quantity) {
 			Tool[] tools = collection.toArray();
 			for (int i = 0; i < collection.Number; i++) {
@@ -85,7 +65,7 @@ namespace cab301_assignment {
 		// public functions
 		public void add(Tool aTool) { // add a new tool to the system
 			ToolCollection currentCollection;
-			if (!getCurrentToolCollection(out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
 				return;
 
 			currentCollection.add(aTool);
@@ -93,7 +73,7 @@ namespace cab301_assignment {
 
 		public void add(Tool aTool, int quantity) { // add new pieces of an existing tool to the system
 			ToolCollection currentCollection;
-			if (!getCurrentToolCollection(out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
 				return;
 
 			changeQuantityOfTool(currentCollection, aTool, quantity);
@@ -101,7 +81,7 @@ namespace cab301_assignment {
 
 		public void delete(Tool aTool) { // delete a given tool from the system
 			ToolCollection currentCollection;
-			if (!getCurrentToolCollection(out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
 				return;
 
 			currentCollection.delete(aTool);
@@ -109,7 +89,7 @@ namespace cab301_assignment {
 
 		public void delete(Tool aTool, int quantity) { // remove some pieces of a tool from the system
 			ToolCollection currentCollection;
-			if (!getCurrentToolCollection(out currentCollection))
+			if (!Database.getTools(Program.selectedCategory, Program.selectedCategory, out currentCollection))
 				return;
 
 			changeQuantityOfTool(currentCollection, aTool, -quantity);
@@ -117,16 +97,32 @@ namespace cab301_assignment {
 
 		public void add(Member aMember) { // add a new memeber to the system
 			Database.memberCollection.add(aMember);
+
+			Console.WriteLine($"Added member {aMember.ToString()} successfully");
 		}
 
 		public void delete(Member aMember) { // delete a member from the system
+			// check if the member is holding any tools
+			if (aMember.Tools.Length != 0) {
+				Console.WriteLine($"Can't delete member {aMember.ToString()} (member is holding tools)");
+				return;
+			}
+
 			Database.memberCollection.delete(aMember);
+
+			Console.WriteLine($"Deleted member {aMember.ToString()} successfully");
 		}
 
 		public void displayBorrowingTools(Member aMember) { // given a member, display all the tools that the member are currently renting
-			Console.Write($"{aMember.ToString()}'s borrowed tools");
-			foreach (string tool in listTools(aMember)) {
-				Console.Write(tool);
+			string[] borrowedToolNames = listTools(aMember);
+			if (borrowedToolNames.Length == 0) {
+				Console.WriteLine($"{aMember.ToString()} is not borrowing any tools");
+			} else {
+				Console.WriteLine($"{aMember.ToString()}'s borrowed tools");
+
+				for (int i = 0; i < borrowedToolNames.Length; i++) {
+					Console.WriteLine($"{i + 1}. {borrowedToolNames[i]}");
+				}
 			}
 		}
 
@@ -149,10 +145,14 @@ namespace cab301_assignment {
 				return;
 			}
 
-			Console.WriteLine($"Tools in tool type '{aToolType}'");
-			Tool[] tools = selectedCollection.toArray();
-			for (int i = 0; i < selectedCollection.Number; i++) {
-				Console.WriteLine($"{i + 1}. {tools[i].ToString()}");
+			if (selectedCollection.Number == 0) {
+				Console.WriteLine($"No tools found in tool type '{aToolType}'");
+			} else {
+				Console.WriteLine($"Tools in tool type '{aToolType}'");
+				Tool[] tools = selectedCollection.toArray();
+				for (int i = 0; i < selectedCollection.Number; i++) {
+					Console.WriteLine($"{i + 1}. {tools[i].ToString()}");
+				}
 			}
 		}
 
@@ -180,10 +180,13 @@ namespace cab301_assignment {
 
 					foreach (Tool tool in tools) {
 						for (int i = 0; i < topBorrowed.Length; i++) {
-							if (tool.NoBorrowings > topBorrowed[i].NoBorrowings) {
+							if (topBorrowed[i] != tool &&
+								(topBorrowed[i] == null || tool.NoBorrowings > topBorrowed[i].NoBorrowings))
+							{
 								// move all the numbers down one place
-								for (int j = i; j < topBorrowed.Length - 1; j++)
+								for (int j = (topBorrowed.Length - 1) - 1; j >= i; j--) {
 									topBorrowed[j + 1] = topBorrowed[j];
+								}
 
 								// assign the new place value
 								topBorrowed[i] = tool;
@@ -197,7 +200,7 @@ namespace cab301_assignment {
 
 			Console.WriteLine($"Top {topBorrowed.Length} most frequently borrowed tools:");
 			for (int i = 0; i < topBorrowed.Length; i++) {
-				Console.WriteLine($"#{i}: {topBorrowed[i].Name} - {topBorrowed[i].NoBorrowings} borrows");
+				Console.WriteLine($"#{i + 1}: {topBorrowed[i].Name} - {topBorrowed[i].NoBorrowings} borrows");
 			}
 		}
 	}

@@ -7,46 +7,7 @@ namespace cab301_assignment {
 
 		public static string selectedCategory = "";
 		public static string selectedType = "";
-
-		private static List<string> getToolCategories() {
-			List<string> categories = new List<string>();
-			foreach (var entry in Database.toolCollections) {
-				categories.Add(entry.Key);
-			}
-
-			return categories;
-		}
-
-		private static bool getToolTypes(string category, out List<string> types) {
-			types = new List<string>();
-			foreach (var entry in Database.toolCollections) {
-				if (entry.Key == category) {
-					foreach (ToolCollection collection in entry.Value) {
-						types.Add(collection.Name);
-					}
-
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		private static bool getTools(string category, string type, out ToolCollection tools) {
-			foreach (var entry in Database.toolCollections) {
-				if (entry.Key == category) {
-					foreach (ToolCollection collection in entry.Value) {
-						if (collection.Name == type) {
-							tools = collection;
-							return true;
-						}
-					}
-				}
-			}
-
-			tools = default(ToolCollection);
-			return false;
-		}
+		public static Member loggedInUser = null;
 
 		static void staffAddToolMenu() {
 			Console.Clear();
@@ -64,30 +25,27 @@ namespace cab301_assignment {
 			Console.WriteLine();
 
 			// get categories
-			getToolCategories();
+			Database.getToolCategories();
 
-			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory))
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out selectedCategory))
 				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			} else {
-				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
-					return;
-
-				Console.WriteLine();
-
-				system.add(new Tool(toolName, toolQuantity));
-
-				Console.WriteLine("Tool successfully added");
+				return;
 			}
+
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+				return;
 
 			Console.WriteLine();
 
-			UI.waitToContinue();
+			system.add(new Tool(toolName, toolQuantity));
+
+			Console.WriteLine("Tool successfully added");
 		}
 
 		static void adjustToolStockMenu(bool add) {
@@ -96,47 +54,44 @@ namespace cab301_assignment {
 			Console.WriteLine();
 
 			// get categories
-			getToolCategories();
+			Database.getToolCategories();
 
-			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory))
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out selectedCategory))
 				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			} else {
-				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
-					return;
-
-				Console.WriteLine();
-
-				ToolCollection collection;
-				if (!getTools(selectedCategory, selectedType, out collection))
-					return;
-
-				Tool selectedTool;
-				if (!UI.toolSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", collection, out selectedTool))
-					return;
-
-				Console.WriteLine();
-
-				int stockChange = UI.getIntInputStrict($"Enter the stock to {(add ? "add" : "remove")}: ", true);
-
-				if (add)
-					system.add(selectedTool, stockChange);
-				else
-					system.delete(selectedTool, stockChange);
-
-				Console.WriteLine();
-
-				Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
+				return;
 			}
+
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+				return;
 
 			Console.WriteLine();
 
-			UI.waitToContinue();
+			ToolCollection collection;
+			if (!Database.getTools(selectedCategory, selectedType, out collection))
+				return;
+
+			Tool selectedTool;
+			if (!UI.listSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", new List<Tool>(collection.toArray()), out selectedTool))
+				return;
+
+			Console.WriteLine();
+
+			int stockChange = UI.getIntInputStrict($"Enter the stock to {(add ? "add" : "remove")}: ", true);
+
+			if (add)
+				system.add(selectedTool, stockChange);
+			else
+				system.delete(selectedTool, stockChange);
+
+			Console.WriteLine();
+
+			Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
 		}
 
 		static void staffAddToolStockMenu() {
@@ -160,10 +115,6 @@ namespace cab301_assignment {
 			Console.WriteLine();
 
 			system.add(new Member(firstName, lastName, contactNumber, pin));
-
-			Console.WriteLine();
-
-			UI.waitToContinue();
 		}
 
 		static void staffRemoveMemberMenu() {
@@ -175,6 +126,7 @@ namespace cab301_assignment {
 		}
 
 		static void staffMenu() {
+			// draw staff menu
 			UI.drawMenu("Staff Menu", new List<UI.IMenuItem> {
 				new UI.MenuOption("Add a new tool", staffAddToolMenu),
 				new UI.MenuOption("Add new stock of an existing tool", staffAddToolStockMenu),
@@ -185,59 +137,132 @@ namespace cab301_assignment {
 				new UI.MenuOption("Return to main menu", mainMenu, true)
 			});
 
+			Console.WriteLine();
+			UI.waitToContinue();
+
 			staffMenu();
 		}
 
 		static void memberDisplayToolsMenu() {
 			Console.Clear();
-			Console.WriteLine("Member registration menu");
+			Console.WriteLine("Tool display menu");
 			Console.WriteLine();
 
 			// get categories
-			getToolCategories();
+			Database.getToolCategories();
 
-			while (!UI.listSelector("Select tool category: ", "Tool category: ", getToolCategories(), out selectedCategory)) {
+			while (!UI.listSelector("Select tool category: ", "Tool category: ", Database.getToolCategories(), out selectedCategory)) {
 				Console.WriteLine("Please select a valid option");
 			}
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			} else {
-				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
-					return;
+				return;
+			}
+
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+				return;
+
+			Console.WriteLine();
+
+			system.displayTools(selectedType);
+		}
+
+		static void memberBorrowToolMenu() {
+			Console.Clear();
+			Console.WriteLine("Tool borrowing menu");
+			Console.WriteLine();
+
+			if (loggedInUser.Tools.Length >= 3) {
+				Console.WriteLine("Cannot borrow any more tools");
 
 				Console.WriteLine();
 
-				system.displayTools(selectedType);
+				UI.waitToContinue();
+
+				memberMenu();
+			}
+
+			// get categories
+			Database.getToolCategories();
+
+			while (!UI.listSelector("Select tool category: ", "Tool category: ", Database.getToolCategories(), out selectedCategory)) {
+				Console.WriteLine("Please select a valid option");
 			}
 
 			Console.WriteLine();
 
-			UI.waitToContinue();
+			List<string> types;
+			if (!Database.getToolTypes(selectedCategory, out types)) {
+				Console.WriteLine("No tool types were found for the given category");
+				return;
+			}
 
-			staffMenu();
-		}
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+				return;
 
-		static void memberBorrowToolMenu() {
+			Console.WriteLine();
 
+			ToolCollection collection;
+			if (!Database.getTools(selectedCategory, selectedType, out collection))
+				return;
+
+			List<Tool> borrowableTools = Database.getBorrowableTools(collection);
+
+			Tool selectedTool;
+			if (!UI.listSelector($"Select tool to borrow: ", "Tool (0 to exit): ", borrowableTools, out selectedTool))
+				return;
+
+			Console.WriteLine();
+
+			system.borrowTool(loggedInUser, selectedTool);
+
+			Console.WriteLine($"{loggedInUser.ToString()} borrowed tool {selectedTool.Name} successfully");
 		}
 
 		static void memberReturnToolMenu() {
+			Console.Clear();
+			Console.WriteLine("Tool return menu");
+			Console.WriteLine();
 
+			string returningToolName;
+			if (!UI.listSelector("Select tool: ", "Tool (0 to exit): ", new List<string>(loggedInUser.Tools), out returningToolName))
+				return;
+
+			Console.WriteLine();
+
+			// get tool
+			Tool returningTool;
+			if (!Database.getToolByName(returningToolName, out returningTool)) {	// TODO: check what other people do for this since you cant loop through tools because its private thanks maolin
+				Console.WriteLine("Error returning tool (member not borrowing tool)");
+				return;
+			}
+
+			system.returnTool(loggedInUser, returningTool);
+
+			Console.WriteLine($"Tool '{returningToolName}' returned successfully");
 		}
 
 		static void memberListBorrowedTools() {
+			Console.Clear();
+			Console.WriteLine($"Borrowed tools for {loggedInUser.ToString()}");
+			Console.WriteLine();
 
+			system.displayBorrowingTools(loggedInUser);
 		}
 
 		static void memberMostFrequentToolsMenu() {
+			Console.Clear();
+			Console.WriteLine($"Most frequently borrowed tools");
+			Console.WriteLine();
 
+			system.displayTopThree();
 		}
 
-		static void memberMenu() {
+		static void memberMenuLogin() {
 			Console.Clear();
 			Console.WriteLine("Member login");
 			Console.WriteLine();
@@ -245,7 +270,6 @@ namespace cab301_assignment {
 			string login = UI.getTextInput("Enter your member login ID: ");
 
 			// check if user exists
-			Member loggedInUser = null;
 			foreach (Member member in Database.memberCollection.toArray()) {
 				if ($"{member.LastName}{member.FirstName}" == login) {
 					loggedInUser = member;
@@ -278,6 +302,16 @@ namespace cab301_assignment {
 				return;
 			}
 
+			memberMenu();
+		}
+
+		static void memberMenu() {
+			// check login
+			if (loggedInUser == null) {
+				memberMenuLogin();
+				return;
+			}
+
 			// draw member menu
 			UI.drawMenu("Member Menu", new List<UI.IMenuItem> {
 				new UI.MenuOption("Display tools by category", memberDisplayToolsMenu),
@@ -287,6 +321,11 @@ namespace cab301_assignment {
 				new UI.MenuOption("Display most frequently borrowed tools", memberMostFrequentToolsMenu),
 				new UI.MenuOption("Return to main menu", mainMenu, true)
 			});
+
+			Console.WriteLine();
+			UI.waitToContinue();
+
+			memberMenu();
 		}
 
 		static void exit() {
@@ -294,6 +333,10 @@ namespace cab301_assignment {
 		}
 
 		static void mainMenu() {
+			// log out user
+			loggedInUser = null;
+
+			// draw main menu
 			UI.drawMenu("Main Menu", new List<UI.IMenuItem>{
 				new UI.MenuTitle("Welcome to the Tool Library System"),
 				new UI.MenuSpacer(),
@@ -321,8 +364,22 @@ namespace cab301_assignment {
 			// add some default tools
 			selectedCategory = "Gardening Tools";
 			selectedType = "Line Trimmers";
-			system.add(new Tool("Line trimmer #1", 100));
-			system.add(new Tool("Line trimmer #2", 21));
+
+			var trimmer1 = new Tool("Bad Line Trimmer", 100);
+			trimmer1.NoBorrowings = 4;
+			system.add(trimmer1);
+
+			var trimmer2 = new Tool("Ultra Line Trimmer", 21);
+			trimmer2.NoBorrowings = 3;
+			system.add(trimmer2);
+
+			var trimmer3 = new Tool("Luxury Line Trimmer", 47);
+			trimmer3.NoBorrowings = 7;
+			system.add(trimmer3);
+
+			var trimmer4 = new Tool("Another Line Trimmer", 55);
+			trimmer4.NoBorrowings = 1;
+			system.add(trimmer4);
 
 			// add a default user
 			system.add(new Member("Bob", "Jeff", "12345678", "1234"));

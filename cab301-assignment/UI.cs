@@ -123,7 +123,7 @@ namespace cab301_assignment {
 			return output;
 		}
 
-		public static bool listSelector(string text, string selectText, List<string> inputs, out string selected) {
+		public static bool listSelector<T>(string text, string selectText, List<T> inputs, out T selected) {
 			Console.WriteLine(text);
 
 			// print list
@@ -137,46 +137,19 @@ namespace cab301_assignment {
 				getIntInput(selectText, out index);
 
 				if (index == 0) {
-					selected = "";
+					selected = default(T);
 					return false;
 				}
 
-				try {
-					selected = inputs[index - 1];
-					return true;
-				}
-				catch (Exception) {
+				int actualIndex = index - 1;
+				if (actualIndex < 0 || actualIndex >= inputs.Count) {
 					Console.WriteLine("Please select a valid option");
-				}
-			}
-		}
-
-		public static bool toolSelector(string text, string selectText, ToolCollection inputs, out Tool selected) {
-			Console.WriteLine(text);
-
-			// print list
-			Tool[] tools = inputs.toArray();
-			for (int i = 0; i < inputs.Number; i++) {
-				Console.WriteLine($" {i + 1}. {tools[i].ToString()}");
-			}
-
-			// get input
-			while (true) {
-				int index;
-				getIntInput(selectText, out index);
-
-				if (index == 0) {
-					selected = default(Tool);
-					return false;
+					continue;
 				}
 
-				try {
-					selected = tools[index - 1];
-					return true;
-				}
-				catch (Exception) {
-					Console.WriteLine("Please select a valid option");
-				}
+				selected = inputs[actualIndex];
+
+				return true;
 			}
 		}
 
@@ -231,21 +204,25 @@ namespace cab301_assignment {
 			if (has_options) {
 				while (true) {
 					int index;
-					try {
-						if (!getIntInput("Enter option: ", out index))
-							throw new Exception();
-
-						if (lastOption != null && index == 0) {
-							lastOption.call();
-						}
-						else {
-							options[index - 1].call();
-						}
-
-						break;
-					} catch(Exception) {
-						Console.WriteLine("Please select a valid option");
+					if (!getIntInput("Enter option: ", out index)) {
+						Console.WriteLine("Please enter a valid number");
+						continue;
 					}
+
+					if (lastOption != null && index == 0) {
+						lastOption.call();
+					}
+					else {
+						int actualIndex = index - 1;
+						if (actualIndex < 0 || actualIndex >= options.Count) {
+							Console.WriteLine("Please select a valid option");
+							continue;
+						}
+
+						options[actualIndex].call();
+					}
+
+					break;
 				}
 			}
 			else {
