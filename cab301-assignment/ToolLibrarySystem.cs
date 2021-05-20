@@ -166,7 +166,7 @@ namespace cab301_assignment {
 			}
 
 			breakLoop:
-			if (selectedCollection != null) {
+			if (selectedCollection == null) {
 				Console.WriteLine($"There are no tools in tool type '{aToolType}'");
 				return;
 			}

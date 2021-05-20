@@ -4,6 +4,7 @@
 // 24/3/06
 
 using System;
+using System.Collections.Generic;
 
 namespace cab301_assignment {
 	// invariants: every node’s left subtree contains values less than or equal to 
@@ -30,15 +31,15 @@ namespace cab301_assignment {
 
 		// pre: true
 		// post: all the nodes in the binary tree are visited once and only once in pre-order
-		void PreOrderTraverse();
+		List<Member> PreOrderTraverse();
 
 		// pre: true
 		// post: all the nodes in the binary tree are visited once and only once in in-order
-		void InOrderTraverse();
+		List<Member> InOrderTraverse();
 
 		// pre: true
 		// post: all the nodes in the binary tree are visited once and only once in post-order
-		void PostOrderTraverse();
+		List<Member> PostOrderTraverse();
 
 		// pre: true
 		// post: all the nodes in the binary tree are removed and the binary tree becomes empty

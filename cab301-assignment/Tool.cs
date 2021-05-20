@@ -11,11 +11,11 @@ namespace cab301_assignment {
 		private MemberCollection borrowers; // members that are currently borrowing the tool
 
 		// constructors
-		public Tool(string name, int quantity, int availableQuantity) {
+		public Tool(string name, int quantity) {
 			this.name = name;
 			this.quantity = quantity;
-			this.availableQuantity = availableQuantity;
 
+			this.availableQuantity = this.quantity;
 			this.noBorrowings = 0;
 			this.borrowers = new MemberCollection();
 		}
