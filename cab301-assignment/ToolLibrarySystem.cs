@@ -152,10 +152,8 @@ namespace cab301_assignment {
 			Console.WriteLine($"Tools in tool type '{aToolType}'");
 			Tool[] tools = selectedCollection.toArray();
 			for (int i = 0; i < selectedCollection.Number; i++) {
-				Console.WriteLine($"{i + 1}. ${tools[i].ToString()}");
+				Console.WriteLine($"{i + 1}. {tools[i].ToString()}");
 			}
-
-			Console.WriteLine();
 		}
 
 		public void borrowTool(Member aMember, Tool aTool) { // a member borrows a tool from the tool library

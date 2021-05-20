@@ -87,7 +87,7 @@ namespace cab301_assignment {
 			}
 		}
 
-		public static void waitForInput() {
+		public static void waitToContinue() {
 			Console.Write("Press any key to continue");
 			Console.ReadKey();
 		}
@@ -132,16 +132,22 @@ namespace cab301_assignment {
 			}
 
 			// get input
-			int index;
-			getIntInput(selectText, out index);
+			while (true) {
+				int index;
+				getIntInput(selectText, out index);
 
-			try {
-				selected = inputs[index - 1];
-				return true;
-			}
-			catch (Exception) {
-				selected = "";
-				return false;
+				if (index == 0) {
+					selected = "";
+					return false;
+				}
+
+				try {
+					selected = inputs[index - 1];
+					return true;
+				}
+				catch (Exception) {
+					Console.WriteLine("Please select a valid option");
+				}
 			}
 		}
 
@@ -155,16 +161,22 @@ namespace cab301_assignment {
 			}
 
 			// get input
-			int index;
-			getIntInput(selectText, out index);
+			while (true) {
+				int index;
+				getIntInput(selectText, out index);
 
-			try {
-				selected = tools[index - 1];
-				return true;
-			}
-			catch (Exception) {
-				selected = default(Tool);
-				return false;
+				if (index == 0) {
+					selected = default(Tool);
+					return false;
+				}
+
+				try {
+					selected = tools[index - 1];
+					return true;
+				}
+				catch (Exception) {
+					Console.WriteLine("Please select a valid option");
+				}
 			}
 		}
 
@@ -238,7 +250,7 @@ namespace cab301_assignment {
 			}
 			else {
 				if (waitAtEnd) {
-					waitForInput();
+					waitToContinue();
 				}
 			}
 		}

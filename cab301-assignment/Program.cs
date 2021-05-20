@@ -66,39 +66,28 @@ namespace cab301_assignment {
 			// get categories
 			getToolCategories();
 
-			bool exiting = false;
-			while (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory, out exiting)) {
-				if (exiting)
-					return;
-
-				Console.WriteLine("Please select a valid option");
-			}
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory))
+				return;
 
 			Console.WriteLine();
 
 			List<string> types;
 			if (!getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			}
-
-			while (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType, out exiting)) {
-				if (exiting)
+			} else {
+				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
 					return;
 
-				Console.WriteLine("Please select a valid option");
+				Console.WriteLine();
+
+				system.add(new Tool(toolName, toolQuantity));
+
+				Console.WriteLine("Tool successfully added");
 			}
 
 			Console.WriteLine();
 
-			system.add(new Tool(toolName, toolQuantity));
-
-			Console.WriteLine("Tool successfully added");
-
-			Console.WriteLine();
-
-			UI.waitForInput();
-
-			staffMenu();
+			UI.waitToContinue();
 		}
 
 		static void adjustToolStockMenu(bool add) {
@@ -109,63 +98,45 @@ namespace cab301_assignment {
 			// get categories
 			getToolCategories();
 
-			bool exiting = false;
-			while (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory, out exiting)) {
-				if (exiting)
-					return;
-
-				Console.WriteLine("Please select a valid option");
-			}
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", getToolCategories(), out selectedCategory))
+				return;
 
 			Console.WriteLine();
 
 			List<string> types;
 			if (!getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			}
-
-			while (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType, out exiting)) {
-				if (exiting)
+			} else {
+				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
 					return;
 
-				if (selectedType == "0")
+				Console.WriteLine();
+
+				ToolCollection collection;
+				if (!getTools(selectedCategory, selectedType, out collection))
 					return;
 
-				Console.WriteLine("Please select a valid option");
+				Tool selectedTool;
+				if (!UI.toolSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", collection, out selectedTool))
+					return;
+
+				Console.WriteLine();
+
+				int stockChange = UI.getIntInputStrict($"Enter the stock to {(add ? "add" : "remove")}: ", true);
+
+				if (add)
+					system.add(selectedTool, stockChange);
+				else
+					system.delete(selectedTool, stockChange);
+
+				Console.WriteLine();
+
+				Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
 			}
 
 			Console.WriteLine();
 
-			ToolCollection collection;
-			if (!getTools(selectedCategory, selectedType, out collection))
-				return;
-
-			Tool selectedTool;
-			while (!UI.toolSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", collection, out selectedTool, out exiting)) {
-				if (exiting)
-					return;
-
-				Console.WriteLine("Please select a valid option");
-			}
-
-			Console.WriteLine();
-
-			int stockChange = UI.getIntInputStrict($"Enter the stock to {(add ? "add" : "remove")}: ", true);
-
-			if (add)
-				system.add(selectedTool, stockChange);
-			else
-				system.delete(selectedTool, stockChange);
-
-			Console.WriteLine();
-
-			Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
-
-			Console.WriteLine();
-
-			UI.waitForInput();
-
-			staffMenu();
+			UI.waitToContinue();
 		}
 
 		static void staffAddToolStockMenu() {
@@ -192,9 +163,7 @@ namespace cab301_assignment {
 
 			Console.WriteLine();
 
-			UI.waitForInput();
-
-			staffMenu();
+			UI.waitToContinue();
 		}
 
 		static void staffRemoveMemberMenu() {
@@ -215,6 +184,8 @@ namespace cab301_assignment {
 				new UI.MenuOption("Show tools a member is borrowing", staffMemberBorrowingToolsMenu),
 				new UI.MenuOption("Return to main menu", mainMenu, true)
 			});
+
+			staffMenu();
 		}
 
 		static void memberDisplayToolsMenu() {
@@ -222,11 +193,10 @@ namespace cab301_assignment {
 			Console.WriteLine("Member registration menu");
 			Console.WriteLine();
 
-
 			// get categories
 			getToolCategories();
 
-			while (!UI.listSelector("Select tool category: ", "Tool category: ", getToolCategories(), out selectedCategory, out exiting)) {
+			while (!UI.listSelector("Select tool category: ", "Tool category: ", getToolCategories(), out selectedCategory)) {
 				Console.WriteLine("Please select a valid option");
 			}
 
@@ -235,31 +205,20 @@ namespace cab301_assignment {
 			List<string> types;
 			if (!getToolTypes(selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
-			}
-
-			while (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType, out exiting)) {
-				if (exiting)
+			} else {
+				if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
 					return;
 
-				if (selectedType == "0")
-					return;
+				Console.WriteLine();
 
-				Console.WriteLine("Please select a valid option");
+				system.displayTools(selectedType);
 			}
 
 			Console.WriteLine();
 
-			ToolCollection collection;
-			if (!getTools(selectedCategory, selectedType, out collection))
-				return;
+			UI.waitToContinue();
 
-			Tool selectedTool;
-			while (!UI.toolSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", collection, out selectedTool, out exiting)) {
-				if (exiting)
-					return;
-
-				Console.WriteLine("Please select a valid option");
-			}
+			staffMenu();
 		}
 
 		static void memberBorrowToolMenu() {
@@ -299,7 +258,7 @@ namespace cab301_assignment {
 				Console.WriteLine("Member not found");
 				Console.WriteLine();
 
-				UI.waitForInput();
+				UI.waitToContinue();
 
 				mainMenu();
 				return;
@@ -313,7 +272,7 @@ namespace cab301_assignment {
 				Console.WriteLine("PIN incorrect");
 				Console.WriteLine();
 
-				UI.waitForInput();
+				UI.waitToContinue();
 				mainMenu();
 
 				return;
