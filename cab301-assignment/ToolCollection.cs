@@ -30,6 +30,10 @@ namespace cab301_assignment {
 			get => number;
 		}
 
+		public string Name { // TODO: check if we're allowed to make this, it's not in the interface
+			get => name;
+		}
+
 		// private functions
 		private void resize(int newSize) {
 			Array.Resize(ref tools, newSize);
