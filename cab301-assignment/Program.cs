@@ -46,9 +46,22 @@ namespace cab301_assignment {
 
 			Console.WriteLine();
 
-			system.add(new Tool(toolName, toolQuantity));
+			try {
+				Tool existingTool;
+				if (Database.getToolByName(toolName, out existingTool)) { // TODO: check if case sensitive
+					int oldStock = existingTool.Quantity;
 
-			Console.WriteLine("Tool successfully added");
+					system.add(existingTool, toolQuantity);
+
+					Console.WriteLine($"Tool already exists, additional stock added (stock {oldStock} -> {existingTool.Quantity})");
+				} else {
+					system.add(new Tool(toolName, toolQuantity));
+
+					Console.WriteLine("Tool successfully added");
+				}
+			} catch(ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		static void adjustToolStockMenu(bool add) {
@@ -86,15 +99,19 @@ namespace cab301_assignment {
 			Console.WriteLine();
 
 			int stockChange = UI.getIntInputStrict($"Enter the stock to {(add ? "add" : "remove")}: ", true);
+			
+			try {
+				if (add)
+					system.add(selectedTool, stockChange);
+				else
+					system.delete(selectedTool, stockChange);
 
-			if (add)
-				system.add(selectedTool, stockChange);
-			else
-				system.delete(selectedTool, stockChange);
+				Console.WriteLine();
 
-			Console.WriteLine();
-
-			Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
+				Console.WriteLine($"{stockChange} stock {(add ? "added" : "removed")}");
+			} catch(ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		static void staffAddToolStockMenu() {
@@ -117,7 +134,14 @@ namespace cab301_assignment {
 
 			Console.WriteLine();
 
-			system.add(new Member(firstName, lastName, contactNumber, pin));
+			try {
+				Member newMember = new Member(firstName, lastName, contactNumber, pin);
+				system.add(newMember);
+
+				Console.WriteLine($"Added member {newMember.ToString()} successfully");
+			} catch(ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		static void staffRemoveMemberMenu() {
@@ -133,7 +157,14 @@ namespace cab301_assignment {
 
 			Console.WriteLine();
 
-			system.delete(selectedMember);
+			try {
+				system.delete(selectedMember);
+
+				Console.WriteLine($"Deleted member {selectedMember.ToString()} successfully");
+			}
+			catch (ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		/*
@@ -301,9 +332,14 @@ namespace cab301_assignment {
 
 			Console.WriteLine();
 
-			system.borrowTool(loggedInUser, selectedTool);
+			try {
+				system.borrowTool(loggedInUser, selectedTool);
 
-			Console.WriteLine($"{loggedInUser.ToString()} borrowed tool {selectedTool.Name} successfully");
+				Console.WriteLine($"{loggedInUser.ToString()} borrowed tool {selectedTool.Name} successfully");
+			}
+			catch (ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		static void memberReturnToolMenu() {
@@ -319,14 +355,19 @@ namespace cab301_assignment {
 
 			// get tool
 			Tool returningTool;
-			if (!Database.getToolByName(returningToolName, out returningTool)) {	// TODO: check what other people do for this since you cant loop through tools because its private thanks maolin
+			if (!Database.getToolByName(returningToolName, out returningTool)) { // TODO: check what other people do for this since you cant loop through tools because its private thanks maolin
 				Console.WriteLine("Error returning tool (member not borrowing tool)");
 				return;
 			}
 
-			system.returnTool(loggedInUser, returningTool);
+			try {
+				system.returnTool(loggedInUser, returningTool);
 
-			Console.WriteLine($"Tool '{returningToolName}' returned successfully");
+				Console.WriteLine($"Tool '{returningToolName}' returned successfully");
+			}
+			catch (ToolException e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		static void memberListBorrowedTools() {
@@ -342,7 +383,7 @@ namespace cab301_assignment {
 			Console.WriteLine($"Most frequently borrowed tools");
 			Console.WriteLine();
 
-			system.displayTopThree();
+			system.displayTopTHree();
 		}
 
 		static void memberMenuLogin() {
@@ -460,7 +501,7 @@ namespace cab301_assignment {
 				system.add(trimmer3);
 
 				var trimmer4 = new Tool("Another Line Trimmer", 55);
-				trimmer4.NoBorrowings = 1;
+				trimmer4.NoBorrowings = 10000;
 				system.add(trimmer4);
 
 				// add a default user

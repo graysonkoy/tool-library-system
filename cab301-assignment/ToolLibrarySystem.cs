@@ -6,7 +6,7 @@ namespace cab301_assignment {
 		// constructors
 		public ToolLibrarySystem(Dictionary<string, List<string>> toolCategoriesAndTypes) {
 			// create tool collections
-			Database.toolCollections = new Dictionary<string, List<ToolCollection>>(); // TODO: check if this is allowed
+			Database.toolCollections = new Dictionary<string, List<ToolCollection>>();
 
 			// loop through categories and create dictionary entries
 			foreach (var entry in toolCategoriesAndTypes) {
@@ -38,80 +38,63 @@ namespace cab301_assignment {
 			for (int i = 0; i < collection.Number; i++) {
 				// check if this is the tool
 				if (tools[i].CompareTo(aTool) == 0) {
-					// add the extra quantity
+					// check if we're removing too many TODO: CHECK THIS
+					int newQuantity = tools[i].Quantity + quantity;
+					int newAvailableQuantity = tools[i].AvailableQuantity + quantity;
+					if (newQuantity < 0 || newAvailableQuantity < 0)
+						throw new ToolException($"Quantity change for {tools[i].Name} failed (removing too many)");
+
+					// change the quantity
 					tools[i].Quantity += quantity;
 					tools[i].AvailableQuantity += quantity;
-
-					// check if there's under 0 tools and clamp
-					if (tools[i].Quantity < 0) {
-						tools[i].Quantity = 0;
-						Console.WriteLine($"{tools[i].ToString()} quantity clamped to 0 (removed too many");
-					}
-
-					// TODO: check this
-					if (tools[i].AvailableQuantity < 0) {
-						tools[i].AvailableQuantity = 0;
-						Console.WriteLine($"{tools[i].ToString()} available quantity clamped to 0 (removed too many");
-					}
 
 					return;
 				}
 			}
 
 			// tool wasn't found
-			Console.WriteLine($"Failed to add {quantity} extra {aTool.ToString()} to the system (tool not found)");
+			throw new ToolException($"Failed to add {quantity} extra {aTool.ToString()} to the system (tool not found)");
+		}
+
+		private ToolCollection getCurrentCollection() {
+			ToolCollection currentCollection;
+			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
+				throw new ToolException($"Failed to get tool collection for category '{Program.selectedCategory}' and type '{Program.selectedType}'");
+
+			return currentCollection;
 		}
 
 		// public functions
 		public void add(Tool aTool) { // add a new tool to the system
-			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
-				return;
-
+			ToolCollection currentCollection = getCurrentCollection();
 			currentCollection.add(aTool);
 		}
 
 		public void add(Tool aTool, int quantity) { // add new pieces of an existing tool to the system
-			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
-				return;
-
+			ToolCollection currentCollection = getCurrentCollection();
 			changeQuantityOfTool(currentCollection, aTool, quantity);
 		}
 
 		public void delete(Tool aTool) { // delete a given tool from the system
-			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
-				return;
-
+			ToolCollection currentCollection = getCurrentCollection();
 			currentCollection.delete(aTool);
 		}
 
 		public void delete(Tool aTool, int quantity) { // remove some pieces of a tool from the system
-			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
-				return;
-
+			ToolCollection currentCollection = getCurrentCollection();
 			changeQuantityOfTool(currentCollection, aTool, -quantity);
 		}
 
-		public void add(Member aMember) { // add a new memeber to the system
+		public void add(Member aMember) { // add a new member to the system
 			Database.memberCollection.add(aMember);
-
-			// TODO: do you print here or in program
-			Console.WriteLine($"Added member {aMember.ToString()} successfully");
 		}
 
 		public void delete(Member aMember) { // delete a member from the system
 			// check if the member is holding any tools
-			if (aMember.Tools.Length != 0) {
-				Console.WriteLine($"Can't delete member {aMember.ToString()} (member is holding tools)");
-				return;
-			}
+			if (aMember.Tools.Length != 0)
+				throw new ToolException($"Can't delete member {aMember.ToString()} (member is holding tools)");
 
 			Database.memberCollection.delete(aMember);
-
-			Console.WriteLine($"Deleted member {aMember.ToString()} successfully");
 		}
 
 		public void displayBorrowingTools(Member aMember) { // given a member, display all the tools that the member are currently renting
@@ -169,7 +152,7 @@ namespace cab301_assignment {
 			return aMember.Tools;
 		}
 
-		public void displayTopThree() { // display top three most frequently borrowed tools by the members in the descending order by the number of times each tool has been borrowed.
+		public void displayTopTHree() { // display top three most frequently borrowed tools by the members in the descending order by the number of times each tool has been borrowed.
 			const int topAmount = 3;
 			Tool[] topBorrowed = new Tool[topAmount];
 

@@ -12,7 +12,7 @@ namespace cab301_assignment {
 
 		void delete(iTool aTool, int quantity); //remove some pieces of a tool from the system
 
-		void add(iMember aMember); //add a new memeber to the system
+		void add(iMember aMember); //add a new member to the system
 
 		void delete(iMember aMember); //delete a member from the system
 

@@ -57,10 +57,9 @@ namespace cab301_assignment {
 
 		// public functions
 		public void addTool(Tool aTool) {
-			if (tools.Number >= 3) {
-				Console.WriteLine("Cannot borrow any more tools");
-				return;
-			}
+			const int maxTools = 3;
+			if (tools.Number >= maxTools)
+				throw new ToolException($"Cannot borrow any more tools (limit of {maxTools} reached)");
 
 			aTool.addBorrower(this);
 			tools.add(aTool);
@@ -72,7 +71,7 @@ namespace cab301_assignment {
 		}
 
 		// overrides
-		public override string ToString() { // return a string containing the first name, lastname, and contact phone number of this memeber
+		public override string ToString() { // return a string containing the first name, lastname, and contact phone number of this member
 			return $"{firstName} {lastName} ({contactNumber})";
 		}
 

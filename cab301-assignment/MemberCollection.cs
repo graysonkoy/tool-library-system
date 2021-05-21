@@ -20,27 +20,19 @@ namespace cab301_assignment {
 
 		// public functions
 		public void add(Member aMember) { // add a new member to this member collection, make sure there are no duplicates in the member collection
-			// check if the member already exists in the collection
-			if (search(aMember)) {
-				Console.WriteLine($"Failed to add member {aMember.ToString()} to the collection (member already found)");
-				return;
-			}
-
 			// insert the new member
 			number++;
 			members.Insert(aMember);
 		}
 
 		public void delete(Member aMember) { // delete a given member from this member collection, a member can be deleted only when the member currently is not holding any tool
-			if (!members.Delete(aMember)) {
-				Console.WriteLine($"Failed to delete member {aMember.ToString()} from collection (member was not found)");
-				return;
-			}
+			if (!members.Delete(aMember))
+				throw new ToolException($"Failed to delete member {aMember.ToString()} from collection (member was not found)");
 
 			number--;
 		}
 
-		public Boolean search(Member aMember) { // search a given member in this member collection. Return true if this memeber is in the member collection; return false otherwise.
+		public Boolean search(Member aMember) { // search a given member in this member collection. Return true if this member is in the member collection; return false otherwise.
 			return members.Search(aMember);
 		}
 

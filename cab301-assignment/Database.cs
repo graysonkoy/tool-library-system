@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace cab301_assignment {
@@ -10,7 +11,7 @@ namespace cab301_assignment {
 		// public functions
 		public static List<string> getToolCategories() {
 			List<string> categories = new List<string>();
-			foreach (var entry in Database.toolCollections) {
+			foreach (var entry in toolCollections) {
 				categories.Add(entry.Key);
 			}
 
@@ -19,7 +20,7 @@ namespace cab301_assignment {
 
 		public static bool getToolTypes(string category, out List<string> types) {
 			types = new List<string>();
-			foreach (var entry in Database.toolCollections) {
+			foreach (var entry in toolCollections) {
 				if (entry.Key == category) {
 					foreach (ToolCollection collection in entry.Value) {
 						types.Add(collection.Name);
@@ -33,7 +34,7 @@ namespace cab301_assignment {
 		}
 
 		public static bool getTools(string category, string type, out ToolCollection tools) {
-			foreach (var entry in Database.toolCollections) {
+			foreach (var entry in toolCollections) {
 				if (entry.Key == category) {
 					foreach (ToolCollection collection in entry.Value) {
 						if (collection.Name == type) {
@@ -75,5 +76,10 @@ namespace cab301_assignment {
 			output = default(Tool);
 			return false;
 		}
+	}
+
+	class ToolException : Exception {
+		public ToolException() {}
+		public ToolException(string message) : base(message) {}
 	}
 }

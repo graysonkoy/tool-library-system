@@ -66,14 +66,12 @@ namespace cab301_assignment {
 				}
 			}
 
-			if (deleted) {
-				// resize the tool array to account for the deleted tool
-				number--;
-				resize(number);
-			}
-			else {
-				Console.WriteLine($"Failed to delete tool {aTool.ToString()} from collection {name} (tool was not found)");
-			}
+			if (!deleted)
+				throw new ToolException($"Failed to delete tool {aTool.ToString()} from collection {name} (tool was not found)");
+
+			// resize the tool array to account for the deleted tool
+			number--;
+			resize(number);
 		}
 
 		public Boolean search(Tool aTool) { // search a given tool in this tool collection. Return true if this tool is in the tool collection; return false otherwise

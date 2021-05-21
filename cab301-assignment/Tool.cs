@@ -47,10 +47,8 @@ namespace cab301_assignment {
 
 		// public functions
 		public void addBorrower(Member aMember) { // add a member to the borrower list
-			if (availableQuantity <= 0) {
-				Console.WriteLine($"Can't add borrower for tool {name} (none available))");
-				return;
-			}
+			if (availableQuantity <= 0)
+				throw new ToolException($"Can't add borrower for tool {name} (none available))");
 
 			// add borrower and reduce available quantity
 			borrowers.add(aMember);
