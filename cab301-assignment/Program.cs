@@ -504,6 +504,10 @@ namespace cab301_assignment {
 				trimmer4.NoBorrowings = 10000;
 				system.add(trimmer4);
 
+				var trimmer5 = new Tool("Unavailable Line Trimmer", 0);
+				trimmer5.NoBorrowings = 10000;
+				system.add(trimmer5);
+
 				// add a default user
 				system.add(new Member("Bob", "Jeff", "12345678", "1234"));
 			}
