@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace cab301_assignment {
-	class Tool : iTool, IComparable<Tool> {
+	public class Tool : iTool, IComparable<Tool> {
 		private string name; // name of this tool
 		private int quantity; // quantity of this tool
 		private int availableQuantity; // quantity of this tool currently available to lend

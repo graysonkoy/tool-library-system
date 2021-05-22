@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace cab301_assignment {
-	class ToolLibrarySystem {
+	public class ToolLibrarySystem {
 		// constructors
 		public ToolLibrarySystem(Dictionary<string, List<string>> toolCategoriesAndTypes) {
 			// create tool collections
@@ -56,36 +56,37 @@ namespace cab301_assignment {
 			throw new ToolException($"Failed to add {quantity} extra {aTool.ToString()} to the system (tool not found)");
 		}
 
-		private ToolCollection getCurrentCollection() {
-			ToolCollection currentCollection;
-			if (!Database.getTools(Program.selectedCategory, Program.selectedType, out currentCollection))
-				throw new ToolException($"Failed to get tool collection for category '{Program.selectedCategory}' and type '{Program.selectedType}'");
-
-			return currentCollection;
-		}
-
 		// public functions
 		public void add(Tool aTool) { // add a new tool to the system
-			ToolCollection currentCollection = getCurrentCollection();
+			ToolCollection currentCollection = Database.getCurrentCollection();
 			currentCollection.add(aTool);
 		}
 
 		public void add(Tool aTool, int quantity) { // add new pieces of an existing tool to the system
-			ToolCollection currentCollection = getCurrentCollection();
+			if (quantity < 0)
+				throw new ToolException("Failed to add stock, additional quantity is negative");
+
+			ToolCollection currentCollection = Database.getCurrentCollection();
 			changeQuantityOfTool(currentCollection, aTool, quantity);
 		}
 
 		public void delete(Tool aTool) { // delete a given tool from the system
-			ToolCollection currentCollection = getCurrentCollection();
+			ToolCollection currentCollection = Database.getCurrentCollection();
 			currentCollection.delete(aTool);
 		}
 
 		public void delete(Tool aTool, int quantity) { // remove some pieces of a tool from the system
-			ToolCollection currentCollection = getCurrentCollection();
+			if (quantity < 0)
+				throw new ToolException("Failed to remove stock, removed quantity is negative");
+
+			ToolCollection currentCollection = Database.getCurrentCollection();
 			changeQuantityOfTool(currentCollection, aTool, -quantity);
 		}
 
 		public void add(Member aMember) { // add a new member to the system
+			if (Database.memberCollection.search(aMember))
+				throw new ToolException("A member with the same name already exists");
+
 			Database.memberCollection.add(aMember);
 		}
 

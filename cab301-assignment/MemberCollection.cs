@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace cab301_assignment {
-	class MemberCollection : iMemberCollection {
+	public class MemberCollection : iMemberCollection {
 		private int number;
 		private BSTree members;
 

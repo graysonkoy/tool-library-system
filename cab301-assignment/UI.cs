@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace cab301_assignment {
-	class UI {
+	public class UI {
 		public enum MenuItemType_t {
 			MENU_TITLE,
 			MENU_SPACER,
@@ -11,11 +11,11 @@ namespace cab301_assignment {
 		}
 
 		public interface IMenuItem {
-			public MenuItemType_t Type {
+			MenuItemType_t Type {
 				get;
 			}
 
-			public string Text {
+			string Text {
 				get;
 			}
 		}

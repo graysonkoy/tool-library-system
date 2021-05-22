@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace cab301_assignment {
-	class Member : iMember, IComparable<Member> {
+	public class Member : iMember, IComparable<Member> {
 		private string firstName, lastName;
 		private string contactNumber;
 		private string pin;

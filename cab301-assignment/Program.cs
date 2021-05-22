@@ -4,13 +4,10 @@ using System.IO;
 
 namespace cab301_assignment {
 	static class Program {
-		public static ToolLibrarySystem system;
+		private static ToolLibrarySystem system;
 
-		public static string selectedCategory = "";
-		public static string selectedType = "";
-
-		public static Member loggedInUser = null;
-		public static bool staffLoggedIn = false;
+		private static Member loggedInUser = null;
+		private static bool staffLoggedIn = false;
 
 		static void staffAddToolMenu() {
 			Console.Clear();
@@ -30,18 +27,18 @@ namespace cab301_assignment {
 			// get categories
 			Database.getToolCategories();
 
-			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out selectedCategory))
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out Database.selectedCategory))
 				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!Database.getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(Database.selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
 				return;
 			}
 
-			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out Database.selectedType))
 				return;
 
 			Console.WriteLine();
@@ -71,25 +68,25 @@ namespace cab301_assignment {
 
 			// get categories
 			Database.getToolCategories();
-
-			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out selectedCategory))
+			
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out Database.selectedCategory))
 				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!Database.getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(Database.selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
 				return;
 			}
 
-			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out Database.selectedType))
 				return;
 
 			Console.WriteLine();
 
 			ToolCollection collection;
-			if (!Database.getTools(selectedCategory, selectedType, out collection))
+			if (!Database.getTools(Database.selectedCategory, Database.selectedType, out collection))
 				return;
 
 			Tool selectedTool;
@@ -129,8 +126,35 @@ namespace cab301_assignment {
 
 			string firstName = UI.getTextInput("Enter the first name of the new member: ");
 			string lastName = UI.getTextInput("Enter the last name of the new member: ");
-			string contactNumber = UI.getTextInput("Enter the mobile number of the new member: ");
-			string pin = UI.getTextInput("Enter PIN: ");
+
+			string contactNumber;
+			while (true) {
+				contactNumber = UI.getTextInput("Enter the mobile number of the new member: ");
+
+				// validate phone number
+				int validatedNumber;
+				if (!int.TryParse(contactNumber, out validatedNumber)) {
+					Console.WriteLine("Please enter only numbers");
+				} else {
+					break;
+				}
+			}
+
+			string pin;
+			while (true) {
+				pin = UI.getTextInput("Enter PIN: ");
+
+				// validate pin
+				int validatedNumber;
+				if (!int.TryParse(pin, out validatedNumber)) {
+					Console.WriteLine("Please enter only numbers");
+				}
+				else if (pin.Length != 4) {
+					Console.WriteLine("Only 4-digit pins are allowed");
+				} else {
+					break;
+				}
+			}
 
 			Console.WriteLine();
 
@@ -270,24 +294,23 @@ namespace cab301_assignment {
 			// get categories
 			Database.getToolCategories();
 
-			while (!UI.listSelector("Select tool category: ", "Tool category: ", Database.getToolCategories(), out selectedCategory)) {
-				Console.WriteLine("Please select a valid option");
-			}
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out Database.selectedCategory))
+				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!Database.getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(Database.selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
 				return;
 			}
 
-			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out Database.selectedType))
 				return;
 
 			Console.WriteLine();
 
-			system.displayTools(selectedType);
+			system.displayTools(Database.selectedType);
 		}
 
 		static void memberBorrowToolMenu() {
@@ -303,25 +326,24 @@ namespace cab301_assignment {
 			// get categories
 			Database.getToolCategories();
 
-			while (!UI.listSelector("Select tool category: ", "Tool category: ", Database.getToolCategories(), out selectedCategory)) {
-				Console.WriteLine("Please select a valid option");
-			}
+			if (!UI.listSelector("Select tool category: ", "Tool category (0 to exit): ", Database.getToolCategories(), out Database.selectedCategory))
+				return;
 
 			Console.WriteLine();
 
 			List<string> types;
-			if (!Database.getToolTypes(selectedCategory, out types)) {
+			if (!Database.getToolTypes(Database.selectedCategory, out types)) {
 				Console.WriteLine("No tool types were found for the given category");
 				return;
 			}
 
-			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out selectedType))
+			if (!UI.listSelector("Select tool type: ", "Tool type (0 to exit): ", types, out Database.selectedType))
 				return;
 
 			Console.WriteLine();
 
 			ToolCollection collection;
-			if (!Database.getTools(selectedCategory, selectedType, out collection))
+			if (!Database.getTools(Database.selectedCategory, Database.selectedType, out collection))
 				return;
 
 			List<Tool> borrowableTools = Database.getBorrowableTools(collection);
@@ -467,53 +489,59 @@ namespace cab301_assignment {
 		}
 
 		static void Main(string[] args) {
-			var saved = Console.Out;
-			Console.SetOut(TextWriter.Null);
-			{
-				// initialise tools and system
-				var toolCategoriesAndTypes = new Dictionary<string, List<string>>();
-				toolCategoriesAndTypes.Add("Gardening Tools", new List<string> { "Line Trimmers", "Lawn Mowers", "Hand Tools", "Wheelbarrows", "Garden Power Tools" });
-				toolCategoriesAndTypes.Add("Flooring Tools", new List<string> { "Scrapers", "Floor Lasers", "Floor Levelling Tools", "Floor Levelling Materials", "Floor Hand Tools", "Tiling Tools" });
-				toolCategoriesAndTypes.Add("Fencing Tools", new List<string> { "Hand Tools", "Electric Fencing", "Steel Fencing Tools", "Power Tools", "Fencing Accessories" });
-				toolCategoriesAndTypes.Add("Measuring Tools", new List<string> { "Distance Tools", "Laser Measurer", "Measuring Jugs", "Temperature & Humidity Tools", "Levelling Tools", "Markers" });
-				toolCategoriesAndTypes.Add("Cleaning Tools", new List<string> { "Draining", "Car Cleaning", "Vacuum", "Pressure Cleaners", "Pool Cleaning", "Floor Cleaning" });
-				toolCategoriesAndTypes.Add("Painting Tools", new List<string> { "Sanding Tools", "Brushes", "Rollers", "Paint Removal Tools", "Paint Scrapers", "Sprayers" });
-				toolCategoriesAndTypes.Add("Electronic Tools", new List<string> { "Voltage Tester", "Oscilloscopes", "Thermal Imaging", "Data Test Tool", "Insulation Testers" });
-				toolCategoriesAndTypes.Add("Electricity Tools", new List<string> { "Test Equipment", "Safety Equipment", "Basic Hand tools", "Circuit Protection", "Cable Tools" });
-				toolCategoriesAndTypes.Add("Automotive Tools", new List<string> { "Jacks", "Air Compressors", "Battery Chargers", "Socket Tools", "Braking", "Drivetrain" });
+			try {
+				var saved = Console.Out;
+				Console.SetOut(TextWriter.Null);
+				{
+					// initialise tools and system
+					var toolCategoriesAndTypes = new Dictionary<string, List<string>>();
+					toolCategoriesAndTypes.Add("Gardening Tools", new List<string> { "Line Trimmers", "Lawn Mowers", "Hand Tools", "Wheelbarrows", "Garden Power Tools" });
+					toolCategoriesAndTypes.Add("Flooring Tools", new List<string> { "Scrapers", "Floor Lasers", "Floor Levelling Tools", "Floor Levelling Materials", "Floor Hand Tools", "Tiling Tools" });
+					toolCategoriesAndTypes.Add("Fencing Tools", new List<string> { "Hand Tools", "Electric Fencing", "Steel Fencing Tools", "Power Tools", "Fencing Accessories" });
+					toolCategoriesAndTypes.Add("Measuring Tools", new List<string> { "Distance Tools", "Laser Measurer", "Measuring Jugs", "Temperature & Humidity Tools", "Levelling Tools", "Markers" });
+					toolCategoriesAndTypes.Add("Cleaning Tools", new List<string> { "Draining", "Car Cleaning", "Vacuum", "Pressure Cleaners", "Pool Cleaning", "Floor Cleaning" });
+					toolCategoriesAndTypes.Add("Painting Tools", new List<string> { "Sanding Tools", "Brushes", "Rollers", "Paint Removal Tools", "Paint Scrapers", "Sprayers" });
+					toolCategoriesAndTypes.Add("Electronic Tools", new List<string> { "Voltage Tester", "Oscilloscopes", "Thermal Imaging", "Data Test Tool", "Insulation Testers" });
+					toolCategoriesAndTypes.Add("Electricity Tools", new List<string> { "Test Equipment", "Safety Equipment", "Basic Hand tools", "Circuit Protection", "Cable Tools" });
+					toolCategoriesAndTypes.Add("Automotive Tools", new List<string> { "Jacks", "Air Compressors", "Battery Chargers", "Socket Tools", "Braking", "Drivetrain" });
 
-				system = new ToolLibrarySystem(toolCategoriesAndTypes);
+					system = new ToolLibrarySystem(toolCategoriesAndTypes);
 
-				// add some default tools
-				selectedCategory = "Gardening Tools";
-				selectedType = "Line Trimmers";
+					// add some default tools
+					Database.selectedCategory = "Gardening Tools";
+					Database.selectedType = "Line Trimmers";
 
-				var trimmer1 = new Tool("Bad Line Trimmer", 100);
-				trimmer1.NoBorrowings = 4;
-				system.add(trimmer1);
+					var trimmer1 = new Tool("Bad Line Trimmer", 100);
+					trimmer1.NoBorrowings = 4;
+					system.add(trimmer1);
 
-				var trimmer2 = new Tool("Ultra Line Trimmer", 21);
-				trimmer2.NoBorrowings = 3;
-				system.add(trimmer2);
+					var trimmer2 = new Tool("Ultra Line Trimmer", 21);
+					trimmer2.NoBorrowings = 3;
+					system.add(trimmer2);
 
-				var trimmer3 = new Tool("Luxury Line Trimmer", 47);
-				trimmer3.NoBorrowings = 7;
-				system.add(trimmer3);
+					var trimmer3 = new Tool("Luxury Line Trimmer", 47);
+					trimmer3.NoBorrowings = 7;
+					system.add(trimmer3);
 
-				var trimmer4 = new Tool("Another Line Trimmer", 55);
-				trimmer4.NoBorrowings = 10000;
-				system.add(trimmer4);
+					var trimmer4 = new Tool("Another Line Trimmer", 55);
+					trimmer4.NoBorrowings = 10000;
+					system.add(trimmer4);
 
-				var trimmer5 = new Tool("Unavailable Line Trimmer", 0);
-				trimmer5.NoBorrowings = 10000;
-				system.add(trimmer5);
+					var trimmer5 = new Tool("Unavailable Line Trimmer", 0);
+					trimmer5.NoBorrowings = 10000;
+					system.add(trimmer5);
 
-				// add a default user
-				system.add(new Member("Bob", "Jeff", "12345678", "1234"));
+					// add a default user
+					system.add(new Member("Bob", "Jeff", "12345678", "1234"));
+				}
+				Console.SetOut(saved);
+
+				mainMenu();
+			} catch(Exception e) {
+				Console.WriteLine(e);
 			}
-			Console.SetOut(saved);
 
-			mainMenu();
+			Console.ReadKey();
 		}
 	}
 }

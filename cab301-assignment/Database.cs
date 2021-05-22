@@ -4,9 +4,13 @@ using System.Runtime.Serialization;
 using System.Text;
 
 namespace cab301_assignment {
-	static class Database {
+	public static class Database {
 		public static Dictionary<string, List<ToolCollection>> toolCollections;
 		public static MemberCollection memberCollection;
+
+		// TODO: this is gross
+		public static string selectedCategory = "";
+		public static string selectedType = "";
 
 		// public functions
 		public static List<string> getToolCategories() {
@@ -16,6 +20,14 @@ namespace cab301_assignment {
 			}
 
 			return categories;
+		}
+
+		public static ToolCollection getCurrentCollection() {
+			ToolCollection currentCollection;
+			if (!getTools(selectedCategory, selectedType, out currentCollection))
+				throw new ToolException($"Failed to get tool collection for category '{selectedCategory}' and type '{selectedType}'");
+
+			return currentCollection;
 		}
 
 		public static bool getToolTypes(string category, out List<string> types) {
@@ -62,7 +74,7 @@ namespace cab301_assignment {
 		}
 
 		public static bool getToolByName(string toolName, out Tool output) {
-			foreach (var entry in Database.toolCollections) {
+			foreach (var entry in toolCollections) {
 				foreach (ToolCollection collection in entry.Value) {
 					foreach (Tool tool in collection.toArray()) {
 						if (tool.Name == toolName) {
@@ -76,9 +88,23 @@ namespace cab301_assignment {
 			output = default(Tool);
 			return false;
 		}
+
+		public static bool getMemberByName(string firstName, string lastName, out Member output) {
+			Member dummy = new Member(firstName, lastName, "0", "0");
+
+			foreach (Member member in memberCollection.toArray()) {
+				if (member.CompareTo(dummy) == 0) {
+					output = member;
+					return true;
+				}
+			}
+
+			output = default(Member);
+			return false;
+		}
 	}
 
-	class ToolException : Exception {
+	public class ToolException : Exception {
 		public ToolException() {}
 		public ToolException(string message) : base(message) {}
 	}

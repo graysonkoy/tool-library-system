@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace cab301_assignment {
-	class ToolCollection : iToolCollection {
+	public class ToolCollection : iToolCollection {
 		private string name;
 		private int number;
 		private Tool[] tools;
