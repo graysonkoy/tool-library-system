@@ -223,7 +223,7 @@ namespace cab301_assignment {
 
 			bool noTopTools = true;
 			for (int i = 0; i < topBorrowed.Length; i++) {
-				if (topBorrowed[i].NoBorrowings != 0) {
+				if (topBorrowed[i] != null && topBorrowed[i].NoBorrowings != 0) {
 					noTopTools = false;
 					break;
 				}
@@ -237,7 +237,8 @@ namespace cab301_assignment {
 			Console.WriteLine($"Top {topBorrowed.Length} most frequently borrowed tools:");
 
 			for (int i = 0; i < topBorrowed.Length; i++) {
-				Console.WriteLine($"#{i + 1}: {topBorrowed[i].Name} - {topBorrowed[i].NoBorrowings} borrows");
+				if (topBorrowed[i] != null)
+					Console.WriteLine($"#{i + 1}: {topBorrowed[i].Name} - {topBorrowed[i].NoBorrowings} borrows");
 			}
 		}
 	}
