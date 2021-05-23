@@ -108,6 +108,47 @@ namespace cab301_assignment {
 		}
 
 		/// <summary>
+		/// Gets text input with extra checks, and waits for a valid entry
+		/// </summary>
+		/// <param name="text">Input message</param>
+		/// <param name="numbersOnly">Whether only numbers can be inputted</param>
+		/// <param name="forcedLength">Optional forced string length</param>
+		/// <returns></returns>
+		public static string getTextInputStrict(string text, bool numbersOnly = false, int forcedLength = -1) {
+			while (true) {
+				string input = getTextInput(text);
+
+				if (numbersOnly) {
+					// validate that each character is an integer
+					bool aCharIsLetter = false;
+					for (int i = 0; i < input.Length; i++) {
+						int validatedNumber;
+						if (!int.TryParse(input[i].ToString(), out validatedNumber)) {
+							aCharIsLetter = true;
+							break;
+						}
+					}
+
+					if (aCharIsLetter) {
+						Console.WriteLine("Please enter only numbers");
+						continue;
+					}
+				}
+
+				if (forcedLength > 0) {
+					// validate length
+					if (input.Length != 4) {
+						Console.WriteLine("Only 4-digit pins are allowed");
+						continue;
+					}
+				}
+
+				// it's valid
+				return input;
+			}
+		}
+
+		/// <summary>
 		/// Gets integer input
 		/// </summary>
 		/// <param name="text">Input message</param>

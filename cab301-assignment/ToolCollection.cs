@@ -17,20 +17,12 @@ namespace cab301_assignment {
 			tools = new Tool[number];
 		}
 
-		public ToolCollection(Member member) { // TODO: is this okay?
-			this.name = $"{member.ToString()}'s Tools";
-			this.number = 0;
-
-			// initialise tool array
-			tools = new Tool[number];
-		}
-
 		// public variable accessors
 		public int Number { // get the number of the types of tools in the community library
 			get => number;
 		}
 
-		public string Name { // TODO: check if we're allowed to make this, it's not in the interface
+		public string Name {
 			get => name;
 		}
 

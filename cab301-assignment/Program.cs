@@ -21,8 +21,6 @@ namespace cab301_assignment {
 			if (toolName == "0")
 				return;
 
-			Console.WriteLine();
-
 			int toolQuantity = UI.getIntInputStrict("Enter the tool quantity: ", true);
 
 			Console.WriteLine();
@@ -142,58 +140,8 @@ namespace cab301_assignment {
 
 			string firstName = UI.getTextInput("Enter the first name of the new member: ");
 			string lastName = UI.getTextInput("Enter the last name of the new member: ");
-
-			string contactNumber;
-			while (true) {
-				contactNumber = UI.getTextInput("Enter the mobile number of the new member: ");
-
-				// validate that each character is an integer
-				bool aCharIsLetter = false;
-				for (int i = 0; i < contactNumber.Length; i++) {
-					int validatedNumber;
-					if (!int.TryParse(contactNumber[i].ToString(), out validatedNumber)) {
-						aCharIsLetter = true;
-						break;
-					}
-				}
-
-				if (aCharIsLetter) {
-					Console.WriteLine("Please enter only numbers");
-					continue;
-				}
-
-				// it's valid
-				break;
-			}
-
-			string pin;
-			while (true) {
-				pin = UI.getTextInput("Enter PIN: ");
-
-				// validate PIN length
-				if (pin.Length != 4) {
-					Console.WriteLine("Only 4-digit pins are allowed");
-					continue;
-				}
-
-				// validate that each character is an integer
-				bool aCharIsLetter = false;
-				for (int i = 0; i < pin.Length; i++) {
-					int validatedNumber;
-					if (!int.TryParse(pin[i].ToString(), out validatedNumber)) {
-						aCharIsLetter = true;
-						break;
-					}
-				}
-
-				if (aCharIsLetter) {
-					Console.WriteLine("Please enter only numbers");
-					continue;
-				}
-
-				// it's valid
-				break;
-			}
+			string contactNumber = UI.getTextInputStrict("Enter the mobile number of the new member: ", true);
+			string pin = UI.getTextInputStrict("Enter PIN: ", true, 4);
 
 			Console.WriteLine();
 
@@ -564,6 +512,20 @@ namespace cab301_assignment {
 		}
 
 		static void Main(string[] args) {
+			// initialise the system
+			var toolCategoriesAndTypes = new Dictionary<string, List<string>>();
+			toolCategoriesAndTypes.Add("Gardening Tools", new List<string> { "Line Trimmers", "Lawn Mowers", "Hand Tools", "Wheelbarrows", "Garden Power Tools" });
+			toolCategoriesAndTypes.Add("Flooring Tools", new List<string> { "Scrapers", "Floor Lasers", "Floor Levelling Tools", "Floor Levelling Materials", "Floor Hand Tools", "Tiling Tools" });
+			toolCategoriesAndTypes.Add("Fencing Tools", new List<string> { "Hand Tools", "Electric Fencing", "Steel Fencing Tools", "Power Tools", "Fencing Accessories" });
+			toolCategoriesAndTypes.Add("Measuring Tools", new List<string> { "Distance Tools", "Laser Measurer", "Measuring Jugs", "Temperature & Humidity Tools", "Levelling Tools", "Markers" });
+			toolCategoriesAndTypes.Add("Cleaning Tools", new List<string> { "Draining", "Car Cleaning", "Vacuum", "Pressure Cleaners", "Pool Cleaning", "Floor Cleaning" });
+			toolCategoriesAndTypes.Add("Painting Tools", new List<string> { "Sanding Tools", "Brushes", "Rollers", "Paint Removal Tools", "Paint Scrapers", "Sprayers" });
+			toolCategoriesAndTypes.Add("Electronic Tools", new List<string> { "Voltage Tester", "Oscilloscopes", "Thermal Imaging", "Data Test Tool", "Insulation Testers" });
+			toolCategoriesAndTypes.Add("Electricity Tools", new List<string> { "Test Equipment", "Safety Equipment", "Basic Hand tools", "Circuit Protection", "Cable Tools" });
+			toolCategoriesAndTypes.Add("Automotive Tools", new List<string> { "Jacks", "Air Compressors", "Battery Chargers", "Socket Tools", "Braking", "Drivetrain" });
+
+			system = new ToolLibrarySystem(toolCategoriesAndTypes);
+
 			run();
 		}
 	}

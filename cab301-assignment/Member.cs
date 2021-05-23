@@ -17,7 +17,7 @@ namespace cab301_assignment {
 			this.contactNumber = contactNumber;
 			this.pin = pin;
 
-			tools = new ToolCollection(this);
+			tools = new ToolCollection($"{this.ToString()}'s Tools");
 		}
 
 		// public variable accessors
