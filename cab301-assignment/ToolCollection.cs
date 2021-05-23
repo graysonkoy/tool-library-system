@@ -22,10 +22,6 @@ namespace cab301_assignment {
 			get => number;
 		}
 
-		public string Name {
-			get => name;
-		}
-
 		// private functions
 		/// <summary>
 		/// Resizes the tool collection array

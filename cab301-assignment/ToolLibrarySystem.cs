@@ -6,16 +6,16 @@ namespace cab301_assignment {
 		// constructors
 		public ToolLibrarySystem(Dictionary<string, List<string>> toolCategoriesAndTypes) {
 			// create tool collections
-			Database.toolCollections = new Dictionary<string, List<ToolCollection>>();
+			Database.toolCollections = new Dictionary<string, Dictionary<string, ToolCollection>>();
 
 			// loop through categories and create dictionary entries
 			foreach (var entry in toolCategoriesAndTypes) {
-				Database.toolCollections.Add(entry.Key, new List<ToolCollection>());
+				Database.toolCollections.Add(entry.Key, new Dictionary<string, ToolCollection>());
 
-				// loop through types in category and add to list
+				// loop through types in category and add to dictionary
 				foreach (var type in entry.Value) {
 					ToolCollection newToolCollection = new ToolCollection(type);
-					Database.toolCollections[entry.Key].Add(newToolCollection);
+					Database.toolCollections[entry.Key].Add(type, newToolCollection); // i'd like to just rely on the type name which is stored in each ToolCollection, but the interface for it doesn't have any way of accessing it. :(
 				}
 			}
 
@@ -134,9 +134,9 @@ namespace cab301_assignment {
 			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
 
-				foreach (var collection in collections) {
-					if (collection.Name == aToolType) {
-						selectedCollection = collection;
+				foreach (var collectionEntry in collections) {
+					if (collectionEntry.Key == aToolType) {
+						selectedCollection = collectionEntry.Value;
 						goto breakLoop;
 					}
 				}
@@ -196,8 +196,8 @@ namespace cab301_assignment {
 			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
 
-				foreach (var collection in collections) {
-					Tool[] tools = collection.toArray();
+				foreach (var collectionEntry in collections) {
+					Tool[] tools = collectionEntry.Value.toArray();
 
 					foreach (Tool tool in tools) {
 						for (int i = 0; i < topBorrowed.Length; i++) {

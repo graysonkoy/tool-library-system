@@ -9,7 +9,7 @@ namespace cab301_assignment {
 	/// for accessing data
 	/// </summary>
 	public static class Database {
-		public static Dictionary<string, List<ToolCollection>> toolCollections;
+		public static Dictionary<string, Dictionary<string, ToolCollection>> toolCollections;
 		public static MemberCollection memberCollection;
 
 		public static string selectedCategory = "";
@@ -49,10 +49,10 @@ namespace cab301_assignment {
 		/// <returns>Success</returns>
 		public static bool getToolTypes(string category, out List<string> types) {
 			types = new List<string>();
-			foreach (var entry in toolCollections) {
-				if (entry.Key == category) {
-					foreach (ToolCollection collection in entry.Value) {
-						types.Add(collection.Name);
+			foreach (var collectionEntry in toolCollections) {
+				if (collectionEntry.Key == category) {
+					foreach (var typeEntry in collectionEntry.Value) {
+						types.Add(typeEntry.Key);
 					}
 
 					return true;
@@ -70,11 +70,11 @@ namespace cab301_assignment {
 		/// <param name="tools">Output of tool collection</param>
 		/// <returns>Success</returns>
 		public static bool getTools(string category, string type, out ToolCollection tools) {
-			foreach (var entry in toolCollections) {
-				if (entry.Key == category) {
-					foreach (ToolCollection collection in entry.Value) {
-						if (collection.Name == type) {
-							tools = collection;
+			foreach (var collectionEntry in toolCollections) {
+				if (collectionEntry.Key == category) {
+					foreach (var typeEntry in collectionEntry.Value) {
+						if (typeEntry.Key == type) {
+							tools = typeEntry.Value;
 							return true;
 						}
 					}
@@ -110,15 +110,16 @@ namespace cab301_assignment {
 		/// <param name="caseInsensitive">Whether the search is case insensitive</param>
 		/// <returns>Whether the tool was found or not</returns>
 		public static bool getToolByName(string toolName, out Tool output, bool caseInsensitive = false) {
-			foreach (var entry in toolCollections) {
-				foreach (ToolCollection collection in entry.Value) {
-					foreach (Tool tool in collection.toArray()) {
+			foreach (var collectionEntry in toolCollections) {
+				foreach (var typeEntry in collectionEntry.Value) {
+					foreach (var tool in typeEntry.Value.toArray()) {
 						if (caseInsensitive) {
 							if (tool.Name.ToLower() == toolName.ToLower()) {
 								output = tool;
 								return true;
 							}
-						} else {
+						}
+						else {
 							if (tool.Name == toolName) {
 								output = tool;
 								return true;
