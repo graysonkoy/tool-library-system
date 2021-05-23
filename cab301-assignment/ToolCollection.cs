@@ -35,12 +35,20 @@ namespace cab301_assignment {
 		}
 
 		// private functions
+		/// <summary>
+		/// Resizes the tool collection array
+		/// </summary>
+		/// <param name="newSize">New array size</param>
 		private void resize(int newSize) {
 			Array.Resize(ref tools, newSize);
 		}
 
 		// public functions
-		public void add(Tool aTool) { // add a given tool to this tool collection
+		/// <summary>
+		/// Adds a new tool to the collection
+		/// </summary>
+		/// <param name="aTool">Tool to add</param>
+		public void add(Tool aTool) {
 			number++;
 
 			// resize the tool array to fit the new tool
@@ -50,7 +58,11 @@ namespace cab301_assignment {
 			tools[number - 1] = aTool;
 		}
 
-		public void delete(Tool aTool) { // delete a given tool from this tool collection
+		/// <summary>
+		/// Deletes a tool from the collection
+		/// </summary>
+		/// <param name="aTool">Tool to delete</param>
+		public void delete(Tool aTool) {
 			bool deleted = false;
 			for (int i = 0; i < number; i++) {
 				if (!deleted) {
@@ -74,7 +86,12 @@ namespace cab301_assignment {
 			resize(number);
 		}
 
-		public Boolean search(Tool aTool) { // search a given tool in this tool collection. Return true if this tool is in the tool collection; return false otherwise
+		/// <summary>
+		/// Searches for a tool in the collection
+		/// </summary>
+		/// <param name="aTool">Tool to search for</param>
+		/// <returns>Whether the tool was found</returns>
+		public Boolean search(Tool aTool) {
 			for (int i = 0; i < number; i++) {
 				// check if this is the tool
 				if (tools[i].CompareTo(aTool) == 0)
@@ -85,7 +102,11 @@ namespace cab301_assignment {
 			return false;
 		}
 
-		public Tool[] toArray() { // output the tools in this tool collection to an array of Tool
+		/// <summary>
+		/// Returns an array of tools in the collection
+		/// </summary>
+		/// <returns>Tool array</returns>
+		public Tool[] toArray() {
 			return tools;
 		}
 	}

@@ -87,11 +87,19 @@ namespace cab301_assignment {
 			}
 		}
 
+		/// <summary>
+		/// Displays a 'press any key to continue' message and waits for input
+		/// </summary>
 		public static void waitToContinue() {
 			Console.Write("Press any key to continue");
 			Console.ReadKey();
 		}
 
+		/// <summary>
+		/// Gets text input
+		/// </summary>
+		/// <param name="text">Input message</param>
+		/// <returns>Text input</returns>
 		public static string getTextInput(string text) {
 			Console.Write(text);
 			string resp = Console.ReadLine();
@@ -99,6 +107,12 @@ namespace cab301_assignment {
 			return resp;
 		}
 
+		/// <summary>
+		/// Gets integer input
+		/// </summary>
+		/// <param name="text">Input message</param>
+		/// <param name="output">Output of entered integer</param>
+		/// <returns>If an integer was entered</returns>
 		public static bool getIntInput(string text, out int output) {
 			Console.Write(text);
 			string resp = Console.ReadLine();
@@ -106,6 +120,12 @@ namespace cab301_assignment {
 			return int.TryParse(resp.ToString(), out output);
 		}
 
+		/// <summary>
+		/// Gets integer input with extra checks, and waits for a valid entry 
+		/// </summary>
+		/// <param name="text">Input message</param>
+		/// <param name="positiveOnly">Whether the number can only be positive</param>
+		/// <returns>The entered integer</returns>
 		public static int getIntInputStrict(string text, bool positiveOnly) {
 			int output;
 			while (true) {
@@ -123,6 +143,15 @@ namespace cab301_assignment {
 			return output;
 		}
 
+		/// <summary>
+		/// Displays a list and lets the user select an element from it. Pressing 0 will return.
+		/// </summary>
+		/// <typeparam name="T">Type of list element</typeparam>
+		/// <param name="text">List title</param>
+		/// <param name="selectText">Input message</param>
+		/// <param name="inputs">List of list elements</param>
+		/// <param name="selected">Output selected list element</param>
+		/// <returns>Whether a list entry was selected, or if the user wants to return</returns>
 		public static bool listSelector<T>(string text, string selectText, List<T> inputs, out T selected) {
 			Console.WriteLine(text);
 
@@ -153,14 +182,21 @@ namespace cab301_assignment {
 			}
 		}
 
-		public static void drawMenu(string titleStr, List<IMenuItem> items, bool waitAtEnd = false) {
+		/// <summary>
+		/// Draws a menu
+		/// </summary>
+		/// <param name="titleStr">Menu title</param>
+		/// <param name="items">List of menu items</param>
+		public static void drawMenu(string titleStr, List<IMenuItem> items) {
 			Console.Clear();
 
+			// draw title
 			Console.WriteLine($"[{titleStr}]");
 
 			List<MenuOption> options = new List<MenuOption>();
 			MenuOption lastOption = null;
 
+			// go through the menu items, drawing each
 			bool has_options = false;
 			foreach (IMenuItem item in items) {
 				switch (item.Type) {
@@ -181,6 +217,7 @@ namespace cab301_assignment {
 					case MenuItemType_t.MENU_OPTION: {
 						var option = (MenuOption)item;
 
+						// store the option if it's the selected 0 item so it can be drawn at the end
 						if (lastOption == null && option.Zeroth) {
 							lastOption = option;
 							break;
@@ -197,10 +234,12 @@ namespace cab301_assignment {
 				}
 			}
 
+			// draw the 0 item
 			if (lastOption != null) {
 				Console.WriteLine($"0: {lastOption.Text}");
 			}
 
+			// handle option selection
 			if (has_options) {
 				while (true) {
 					int index;
@@ -223,11 +262,6 @@ namespace cab301_assignment {
 					}
 
 					break;
-				}
-			}
-			else {
-				if (waitAtEnd) {
-					waitToContinue();
 				}
 			}
 		}

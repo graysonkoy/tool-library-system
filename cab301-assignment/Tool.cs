@@ -36,17 +36,21 @@ namespace cab301_assignment {
 			set => availableQuantity = value;
 		}
 
-		public int NoBorrowings { // get and set the number of times that this tool has been borrowed
+		public int NoBorrowings {
 			get => noBorrowings;
 			set => noBorrowings = value;
 		}
 
-		public MemberCollection GetBorrowers { // get all the members who are currently holding this tool
+		public MemberCollection GetBorrowers {
 			get => borrowers;
 		}
 
 		// public functions
-		public void addBorrower(Member aMember) { // add a member to the borrower list
+		/// <summary>
+		/// Adds a borrower of the tool
+		/// </summary>
+		/// <param name="aMember">Borrowing member</param>
+		public void addBorrower(Member aMember) {
 			if (availableQuantity <= 0)
 				throw new ToolException($"Can't add borrower for tool {name} (none available)");
 
@@ -58,7 +62,11 @@ namespace cab301_assignment {
 			noBorrowings++;
 		}
 
-		public void deleteBorrower(Member aMember) { // delete a member from the borrower list
+		/// <summary>
+		/// Deletes a borrower of the tool
+		/// </summary>
+		/// <param name="aMember">Borrowing member</param>
+		public void deleteBorrower(Member aMember) {
 			// remove borrower and increase available quantity
 			borrowers.delete(aMember);
 			availableQuantity++;

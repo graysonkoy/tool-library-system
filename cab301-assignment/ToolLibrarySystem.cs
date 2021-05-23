@@ -19,78 +19,88 @@ namespace cab301_assignment {
 				}
 			}
 
-			/*
-			int toolCategories = tools.Length;
-			this.toolCollections = new ToolCollection[toolCategories][];
-			for (int i = 0; i < toolCategories; i++) {
-				int toolTypesForThisCategory = tools[i].Length;
-				this.toolCollections[i] = new ToolCollection[toolTypesForThisCategory];
-			}
-			*/
-
 			// create member collection
 			Database.memberCollection = new MemberCollection();
 		}
 
 		// private functions
-		private void changeQuantityOfTool(ToolCollection collection, Tool aTool, int quantity) {
-			Tool[] tools = collection.toArray();
-			for (int i = 0; i < collection.Number; i++) {
-				// check if this is the tool
-				if (tools[i].CompareTo(aTool) == 0) {
-					// check if we're removing too many TODO: CHECK THIS
-					int newQuantity = tools[i].Quantity + quantity;
-					int newAvailableQuantity = tools[i].AvailableQuantity + quantity;
-					if (newQuantity < 0 || newAvailableQuantity < 0)
-						throw new ToolException($"Quantity change for {tools[i].Name} failed (removing too many)");
+		/// <summary>
+		/// Changes the quantity of a tool
+		/// </summary>
+		/// <param name="aTool">Tool to adjust quantity for</param>
+		/// <param name="quantity">Quantity change</param>
+		private void changeQuantityOfTool(Tool aTool, int quantity) {
+			// check if we're removing too many
+			int newQuantity = aTool.Quantity + quantity;
+			int newAvailableQuantity = aTool.AvailableQuantity + quantity;
+			if (newQuantity < 0 || newAvailableQuantity < 0)
+				throw new ToolException($"Quantity change for {aTool.Name} failed (removing too many)");
 
-					// change the quantity
-					tools[i].Quantity += quantity;
-					tools[i].AvailableQuantity += quantity;
-
-					return;
-				}
-			}
-
-			// tool wasn't found
-			throw new ToolException($"Failed to add {quantity} extra {aTool.ToString()} to the system (tool not found)");
+			// change the quantity
+			aTool.Quantity += quantity;
+			aTool.AvailableQuantity += quantity;
 		}
 
 		// public functions
-		public void add(Tool aTool) { // add a new tool to the system
+		/// <summary>
+		/// Adds a new tool to the system
+		/// </summary>
+		/// <param name="aTool">Tool to add</param>
+		public void add(Tool aTool) {
 			ToolCollection currentCollection = Database.getCurrentCollection();
 			currentCollection.add(aTool);
 		}
 
-		public void add(Tool aTool, int quantity) { // add new pieces of an existing tool to the system
+		/// <summary>
+		/// Adds additional stock of a tool
+		/// </summary>
+		/// <param name="aTool">Tool to add stock to</param>
+		/// <param name="quantity">Quantity change</param>
+		public void add(Tool aTool, int quantity) {
 			if (quantity < 0)
 				throw new ToolException("Failed to add stock, additional quantity is negative");
 
-			ToolCollection currentCollection = Database.getCurrentCollection();
-			changeQuantityOfTool(currentCollection, aTool, quantity);
+			changeQuantityOfTool(aTool, quantity);
 		}
 
-		public void delete(Tool aTool) { // delete a given tool from the system
+		/// <summary>
+		/// Deletes a tool from the system
+		/// </summary>
+		/// <param name="aTool">Tool to delete</param>
+		public void delete(Tool aTool) {
 			ToolCollection currentCollection = Database.getCurrentCollection();
 			currentCollection.delete(aTool);
 		}
 
-		public void delete(Tool aTool, int quantity) { // remove some pieces of a tool from the system
+		/// <summary>
+		/// Removes stock of a tool
+		/// </summary>
+		/// <param name="aTool">Tool to remove stock from</param>
+		/// <param name="quantity">Quantity change</param>
+		public void delete(Tool aTool, int quantity) {
 			if (quantity < 0)
 				throw new ToolException("Failed to remove stock, removed quantity is negative");
 
-			ToolCollection currentCollection = Database.getCurrentCollection();
-			changeQuantityOfTool(currentCollection, aTool, -quantity);
+			changeQuantityOfTool(aTool, -quantity);
 		}
 
-		public void add(Member aMember) { // add a new member to the system
+		/// <summary>
+		/// Adds a new member to the system
+		/// </summary>
+		/// <param name="aMember">Member to add</param>
+		public void add(Member aMember) {
+			// check if the member already exists
 			if (Database.memberCollection.search(aMember))
 				throw new ToolException("A member with the same name already exists");
 
 			Database.memberCollection.add(aMember);
 		}
 
-		public void delete(Member aMember) { // delete a member from the system
+		/// <summary>
+		/// Deletes a member from the system
+		/// </summary>
+		/// <param name="aMember">Member to delete</param>
+		public void delete(Member aMember) {
 			// check if the member is holding any tools
 			if (aMember.Tools.Length != 0)
 				throw new ToolException($"Can't delete member {aMember.ToString()} (member is holding tools)");
@@ -98,7 +108,11 @@ namespace cab301_assignment {
 			Database.memberCollection.delete(aMember);
 		}
 
-		public void displayBorrowingTools(Member aMember) { // given a member, display all the tools that the member are currently renting
+		/// <summary>
+		/// Displays a member's borrowed tools
+		/// </summary>
+		/// <param name="aMember">Member to display borrowed tools for</param>
+		public void displayBorrowingTools(Member aMember) {
 			string[] borrowedToolNames = listTools(aMember);
 			if (borrowedToolNames.Length == 0) {
 				Console.WriteLine($"{aMember.ToString()} is not borrowing any tools");
@@ -111,7 +125,11 @@ namespace cab301_assignment {
 			}
 		}
 
-		public void displayTools(string aToolType) { // display all the tools of a tool type selected by a member
+		/// <summary>
+		/// Displays all of the tools of a certain type
+		/// </summary>
+		/// <param name="aToolType">Tool type</param>
+		public void displayTools(string aToolType) {
 			ToolCollection selectedCollection = null;
 			foreach (var entry in Database.toolCollections) {
 				var collections = entry.Value;
@@ -126,7 +144,7 @@ namespace cab301_assignment {
 
 			breakLoop:
 			if (selectedCollection == null) {
-				Console.WriteLine($"There are no tools in tool type '{aToolType}'");
+				Console.WriteLine($"Tool type '{aToolType}' not found");
 				return;
 			}
 
@@ -141,19 +159,37 @@ namespace cab301_assignment {
 			}
 		}
 
-		public void borrowTool(Member aMember, Tool aTool) { // a member borrows a tool from the tool library
+		/// <summary>
+		/// Borrows a tool for a member
+		/// </summary>
+		/// <param name="aMember">Borrowing member</param>
+		/// <param name="aTool">Tool to borrow</param>
+		public void borrowTool(Member aMember, Tool aTool) {
 			aMember.addTool(aTool);
 		}
 
-		public void returnTool(Member aMember, Tool aTool) { // a member return a tool to the tool library
+		/// <summary>
+		/// Returns a tool for a member
+		/// </summary>
+		/// <param name="aMember">Borrowing member</param>
+		/// <param name="aTool">Tool to return</param>
+		public void returnTool(Member aMember, Tool aTool) {
 			aMember.deleteTool(aTool);
 		}
 
+		/// <summary>
+		/// Returns a member's borrowed tools
+		/// </summary>
+		/// <param name="aMember">Member to get borrowed tools for</param>
+		/// <returns>An array containing the member's borrowed tools</returns>
 		public string[] listTools(Member aMember) { // get a list of tools that are currently held by a given member
 			return aMember.Tools;
 		}
 
-		public void displayTopTHree() { // display top three most frequently borrowed tools by the members in the descending order by the number of times each tool has been borrowed.
+		/// <summary>
+		/// Displays the top three most-borrowed tools
+		/// </summary>
+		public void displayTopTHree() {
 			const int topAmount = 3;
 			Tool[] topBorrowed = new Tool[topAmount];
 
@@ -165,9 +201,11 @@ namespace cab301_assignment {
 
 					foreach (Tool tool in tools) {
 						for (int i = 0; i < topBorrowed.Length; i++) {
-							if (topBorrowed[i] != tool &&
-								(topBorrowed[i] == null || tool.NoBorrowings > topBorrowed[i].NoBorrowings))
-							{
+							// check if this tool is already at this place
+							if (topBorrowed[i] == tool)
+								continue;
+
+							if (topBorrowed[i] == null || tool.NoBorrowings > topBorrowed[i].NoBorrowings) {
 								// move all the numbers down one place
 								for (int j = (topBorrowed.Length - 1) - 1; j >= i; j--) {
 									topBorrowed[j + 1] = topBorrowed[j];
@@ -183,7 +221,21 @@ namespace cab301_assignment {
 				}
 			}
 
+			bool noTopTools = true;
+			for (int i = 0; i < topBorrowed.Length; i++) {
+				if (topBorrowed[i].NoBorrowings != 0) {
+					noTopTools = false;
+					break;
+				}
+			}
+
+			if (noTopTools) {
+				Console.WriteLine("No tools have been borrowed");
+				return;
+			}
+
 			Console.WriteLine($"Top {topBorrowed.Length} most frequently borrowed tools:");
+
 			for (int i = 0; i < topBorrowed.Length; i++) {
 				Console.WriteLine($"#{i + 1}: {topBorrowed[i].Name} - {topBorrowed[i].NoBorrowings} borrows");
 			}

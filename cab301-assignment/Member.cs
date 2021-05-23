@@ -8,7 +8,7 @@ namespace cab301_assignment {
 		private string contactNumber;
 		private string pin;
 
-		private ToolCollection tools; // TODO: does this have to be a string array?
+		private ToolCollection tools;
 
 		// constructors
 		public Member(string firstName, string lastName, string contactNumber, string pin) {
@@ -43,7 +43,6 @@ namespace cab301_assignment {
 
 		public string[] Tools { // get a list of tools that this member is currently holding
 			get {
-				// TODO: check if this is okay
 				string[] toolString = new string[tools.Number];
 
 				Tool[] toolArray = tools.toArray();
@@ -56,6 +55,10 @@ namespace cab301_assignment {
 		}
 
 		// public functions
+		/// <summary>
+		/// Borrows a tool
+		/// </summary>
+		/// <param name="aTool">Tool to borrow</param>
 		public void addTool(Tool aTool) {
 			const int maxTools = 3;
 			if (tools.Number >= maxTools)
@@ -65,6 +68,10 @@ namespace cab301_assignment {
 			tools.add(aTool);
 		}
 
+		/// <summary>
+		/// Returns a tool
+		/// </summary>
+		/// <param name="aTool">Tool to return</param>
 		public void deleteTool(Tool aTool) {
 			aTool.deleteBorrower(this);
 			tools.delete(aTool);

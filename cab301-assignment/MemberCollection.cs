@@ -19,24 +19,40 @@ namespace cab301_assignment {
 		}
 
 		// public functions
-		public void add(Member aMember) { // add a new member to this member collection, make sure there are no duplicates in the member collection
-			// insert the new member
+		/// <summary>
+		/// Adds a new member to this member collection
+		/// </summary>
+		/// <param name="aMember">Member to add</param>
+		public void add(Member aMember) {
 			number++;
 			members.Insert(aMember);
 		}
 
-		public void delete(Member aMember) { // delete a given member from this member collection, a member can be deleted only when the member currently is not holding any tool
+		/// <summary>
+		/// Deletes a member from the member collection
+		/// </summary>
+		/// <param name="aMember">Member to delete</param>
+		public void delete(Member aMember) {
 			if (!members.Delete(aMember))
 				throw new ToolException($"Failed to delete member {aMember.ToString()} from collection (member was not found)");
 
 			number--;
 		}
 
-		public Boolean search(Member aMember) { // search a given member in this member collection. Return true if this member is in the member collection; return false otherwise.
+		/// <summary>
+		/// Searches for a member in the collection
+		/// </summary>
+		/// <param name="aMember">Member to search for</param>
+		/// <returns>Whether the member was found</returns>
+		public Boolean search(Member aMember) {
 			return members.Search(aMember);
 		}
 
-		public Member[] toArray() { // output the members in this collection to an array of Member
+		/// <summary>
+		/// Returns an array of members in the collection
+		/// </summary>
+		/// <returns>Member array</returns>
+		public Member[] toArray() {
 			List<Member> membersList = members.InOrderTraverse();
 			return membersList.ToArray();
 		}
