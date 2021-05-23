@@ -31,10 +31,12 @@ namespace cab301_assignment {
 		/// <param name="quantity">Quantity change</param>
 		private void changeQuantityOfTool(Tool aTool, int quantity) {
 			// check if we're removing too many
-			int newQuantity = aTool.Quantity + quantity;
-			int newAvailableQuantity = aTool.AvailableQuantity + quantity;
-			if (newQuantity < 0 || newAvailableQuantity < 0)
-				throw new ToolException($"Quantity change for {aTool.Name} failed (removing too many)");
+			if (quantity < 0) {
+				int newQuantity = aTool.Quantity + quantity;
+				int newAvailableQuantity = aTool.AvailableQuantity + quantity;
+				if (newQuantity < 0 || newAvailableQuantity < 0)
+					throw new ToolException($"Quantity change for {aTool.Name} failed (removing too many)");
+			}
 
 			// change the quantity
 			aTool.Quantity += quantity;
