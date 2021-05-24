@@ -94,6 +94,11 @@ namespace cab301_assignment {
 			if (!Database.getTools(Database.selectedCategory, Database.selectedType, out collection))
 				return;
 
+			if (collection.Number == 0) {
+				Console.WriteLine("No tools were found of this category and type");
+				return;
+			}
+
 			Tool selectedTool;
 			if (!UI.listSelector($"Select tool to {(add ? "add" : "remove")} stock for: ", "Tool (0 to exit): ", new List<Tool>(collection.toArray()), out selectedTool))
 				return;
@@ -162,6 +167,11 @@ namespace cab301_assignment {
 			Console.Clear();
 			Console.WriteLine("Member deletion menu");
 			Console.WriteLine();
+
+			if (Database.memberCollection.Number == 0) {
+				Console.WriteLine("No members were found");
+				return;
+			}
 
 			List<Member> members = new List<Member>(Database.memberCollection.toArray());
 
@@ -331,7 +341,17 @@ namespace cab301_assignment {
 			if (!Database.getTools(Database.selectedCategory, Database.selectedType, out collection))
 				return;
 
+			if (collection.Number == 0) {
+				Console.WriteLine("No tools were found of this category and type");
+				return;
+			}
+
 			List<Tool> borrowableTools = Database.getBorrowableTools(collection);
+
+			if (borrowableTools.Count == 0) {
+				Console.WriteLine("No tools of this category and type are currently borrowable");
+				return;
+			}
 
 			Tool selectedTool;
 			if (!UI.listSelector($"Select tool to borrow: ", "Tool (0 to exit): ", borrowableTools, out selectedTool))
@@ -356,6 +376,11 @@ namespace cab301_assignment {
 			Console.Clear();
 			Console.WriteLine("Tool return menu");
 			Console.WriteLine();
+
+			if (loggedInUser.Tools.Length == 0) {
+				Console.WriteLine("You aren't borrowing any tools");
+				return;
+			}
 
 			string returningToolName;
 			if (!UI.listSelector("Select tool: ", "Tool (0 to exit): ", new List<string>(loggedInUser.Tools), out returningToolName))
