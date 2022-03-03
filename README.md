@@ -1,1 +1,3 @@
-# cab301-assignment
+# Tool Library System
+
+Assignment for CAB301 at QUT
